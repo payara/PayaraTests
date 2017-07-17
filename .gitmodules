@@ -1,0 +1,13 @@
+[submodule "Public/JavaEE7-Samples"]
+	path = Public/JavaEE7-Samples
+	url = https://github.com/payara/javaee7-samples
+[submodule "Public/CargoTracker"]
+	path = Public/CargoTracker
+	url = https://github.com/payara/cargotracker
+[submodule "Public/Mojarra"]
+	path = Public/Mojarra
+	url = https://github.com/payara/mojarra
+	branch = mojarra-2.2.14-payara-maintenance
+[submodule "Private/PayaraTests-Private"]
+	path = Private/PayaraTests-Private
+	url = https://bitbucket.org/payara/payaratests-private

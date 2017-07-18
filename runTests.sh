@@ -211,6 +211,9 @@ $ASADMIN delete-jvm-options "-XX\:MaxPermSize=192m"
 
 $ASADMIN create-jvm-options "-XX\:MaxPermSize=512m"
 
+# PAYARA-1760 Suppress errors when on WiFi and using OSX
+$ASADMIN create-jvm-options "-Djava.net.preferIPv4Stack=true"
+
 $ASADMIN set-log-attributes --target server com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
 
 # Restart domain

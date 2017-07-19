@@ -242,6 +242,14 @@ echo "##########################"
 echo "# Running Selected Tests #"
 echo "##########################"
 echo ""
+
+# Initialise the exit variables
+PAYARA_PRIVATE_TEST_RESULT=0
+SAMPLES_TEST_RESULT=0
+CARGO_TRACKER_TEST_RESULT=0
+GLASSFISH_TEST_RESULT=0
+MOJARRA_TEST_RESULT=0
+
 # Run the private Payara tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
     # If we've selected to only run the stable tests...
@@ -257,9 +265,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
                 mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -fae -f Private/PayaraTests-Private/pom.xml
+                PAYARA_PRIVATE_TEST_RESULT=$?
             else
                 # Fail fast
                 mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -f Private/PayaraTests-Private/pom.xml
+                PAYARA_PRIVATE_TEST_RESULT=$?
             fi
         else
             # Run the private tests with the stable profile (default)
@@ -272,9 +282,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
                 mvn clean test -U -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -fae -f Private/PayaraTests-Private/pom.xml
+                PAYARA_PRIVATE_TEST_RESULT=$?
             else
                 # Fail fast
                 mvn clean test -U -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -f Private/PayaraTests-Private/pom.xml
+                PAYARA_PRIVATE_TEST_RESULT=$?
             fi
         fi
     # If we've selected to run all of the private Payara tests...
@@ -289,9 +301,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
             mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -fae -f Private/PayaraTests-Private/pom.xml
+            PAYARA_PRIVATE_TEST_RESULT=$?
         else
             # Fail fast
             mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -f Private/PayaraTests-Private/pom.xml
+            PAYARA_PRIVATE_TEST_RESULT=$?
         fi
     fi
 fi
@@ -310,9 +324,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
             mvn clean test -U -Ppayara-remote,stable -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
+            SAMPLES_TEST_RESULT=$?
         else
             # Fail fast
             mvn clean test -U -Ppayara-remote,stable -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
+            SAMPLES_TEST_RESULT=$?
         fi
     # If we've selected to run all of the tests...
     else
@@ -326,9 +342,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
             mvn clean test -U -Ppayara-remote,all -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
+            SAMPLES_TEST_RESULT=$?
         else
             # Fail fast
             mvn clean test -U -Ppayara-remote,all -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
+            SAMPLES_TEST_RESULT=$?
         fi
     fi
 fi
@@ -345,9 +363,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
     if [ "$FAIL_AT_END" != "n" ]; then
         # Fail at end
         mvn clean test -U -fae -f Public/CargoTracker/pom.xml
+        CARGO_TRACKER_TEST_RESULT=$?
     else
         # Fail fast
         mvn clean test -U -f Public/CargoTracker/pom.xml
+        CARGO_TRACKER_TEST_RESULT=$?
     fi
 fi
 
@@ -365,9 +385,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_GLASSFISH_TESTS" != "n" ]; then
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
             mvn clean test -U -Dglassfish.home=$PAYARA_HOME/glassfish -fae -f $PAYARA_SOURCE/appserver/tests/quicklook/pom.xml
+            GLASSFISH_TEST_RESULT=$?
         else
             # Fail fast
             mvn clean test -U -Dglassfish.home=$PAYARA_HOME/glassfish -f $PAYARA_SOURCE/appserver/tests/quicklook/pom.xml
+            GLASSFISH_TEST_RESULT=$?
         fi
     # TODO - If we've selected to run all of the tests...
     fi
@@ -392,9 +414,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MOJARRA_TESTS" != "n" ]; then
     if [ "$FAIL_AT_END" != "n" ]; then
         # Fail at end
         mvn -U -fae -Pintegration-custom-modules,stable-tests -Dglassfish.cargo.home=$PAYARA_HOME verify -f Public/Mojarra/test/pom.xml
+        MOJARRA_TEST_RESULT=$?
     else
         # Fail fast
         mvn -U -Pintegration-custom-modules,stable-tests -Dglassfish.cargo.home=$PAYARA_HOME verify -f Public/Mojarra/test/pom.xml
+        MOJARRA_TEST_RESULT=$?
     fi
 fi
 
@@ -414,3 +438,10 @@ $ASADMIN stop-database || true
 $ASADMIN -p 6048 stop-cluster test-cluster || true
 $ASADMIN stop-domain test-domain_asadmin || true
 $ASADMIN stop-database --dbport 1528 || true
+
+##########################
+### Check for Failures ###
+##########################
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ]; then
+    exit 1
+fi

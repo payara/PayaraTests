@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>fish.payara.tests</groupId>
-    <artifactId>payara-tests-parent</artifactId>
-    <version>2.0</version>
+    <parent>
+        <groupId>fish.payara.tests</groupId>
+        <artifactId>payara-tests-parent</artifactId>
+        <version>2.0</version>
+    </parent>
+    <groupId>fish.payara.tests.private</groupId>
+    <artifactId>private-tests-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Payara Tests Parent</name>
-    
-    <modules>
-        <module>Public</module>
-        <module>Private</module>
-    </modules>
-
+    <name>Payara Tests - Private</name>
 </project>

@@ -11,3 +11,4 @@
 [submodule "Private/PayaraTests-Private"]
 	path = Private/PayaraTests-Private
 	url = git@bitbucket.org:payara/payaratests-private
+        branch = Payara-4.1.1.171-Tests

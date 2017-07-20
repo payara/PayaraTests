@@ -10,4 +10,4 @@
 	branch = mojarra-2.2.14-payara-maintenance
 [submodule "Private/PayaraTests-Private"]
 	path = Private/PayaraTests-Private
-	url = https://bitbucket.org/payara/payaratests-private
+	url = git@bitbucket.org:payara/payaratests-private

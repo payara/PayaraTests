@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################
 ### Get the run mode options ###
@@ -59,6 +59,10 @@ else
         read -p "Do you only want to run quick tests? (y/n) [y] " QUICK_ONLY
     # If we don't want to run all of the tests...
     else
+        # Set these properties to false to prevent falling through the OR checks later on
+        STABLE_ONLY="n"
+        QUICK_ONLY="n"
+    
         # Check if we want to run the private Payara tests
         read -p "Do you want to run the Private Payara tests? (y/n) [y] " RUN_PAYARA_PRIVATE_TESTS
         

@@ -90,6 +90,9 @@ else
         # Check if we want to run the Cargo Tracker tests
         read -p "Do you want to run the Cargo Tracker tests? (y/n) [y] " RUN_CARGO_TRACKER_TESTS
 
+	# Check if we want to run the Cargo Tracker tests against embedded
+	read -p "Do you want to run the Cargo Tracker tests against embedded? (y/n) [y] " RUN_EMBEDDED_TESTS
+
         # Check if we want to run the GlassFish tests
         read -p "DO you want to run the GlassFish tests? (y/n) [y] " RUN_GLASSFISH_TESTS
 
@@ -253,6 +256,8 @@ SAMPLES_TEST_RESULT=0
 CARGO_TRACKER_TEST_RESULT=0
 GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
+EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=0
+EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=0
 
 # Run the private Payara tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
@@ -375,6 +380,37 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
     fi
 fi
 
+# Run the embedded tests if selected
+if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
+    # Run the Cargo Tracker tests against embedded all
+    echo ""
+    echo "##############################"
+    echo "# Running Embedded All Tests #"
+    echo "##############################"
+    echo ""
+    # Check if we should fail at end or not
+    if [ "$FAIL_AT_END" != "n" ]; then
+	    # Fail at end
+	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+    else
+	    # Fail fast
+	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+    fi
+
+    # Run the Cargo Tracker tests against embedded web
+    if [ "$FAIL_AT_END" != "n" ]; then
+	    # Fail at end
+	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+    else
+	    # Fail fast
+	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+    fi
+fi
+
 # Run the GlassFish tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_GLASSFISH_TESTS" != "n" ]; then
     # If we've selected to only run the quicklook tests...
@@ -446,6 +482,6 @@ $ASADMIN stop-database --dbport 1528 || true
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ]; then
     exit 1
 fi

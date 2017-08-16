@@ -42,7 +42,7 @@ if [ ! $INTERACTIVE ]; then
         # If one was provided, grab its properties
         . $PROPERTIES_FILE
     else
-        # If one wasn't provided, just grab the ones from the default properties file
+	# If one wasn't provided, just grab the ones from the default properties file
         . ./test-suite-config.properties
     fi
 # If interactive mode was selected
@@ -108,7 +108,38 @@ else
     
     # Check if we want to use the distribution from the source, or provide our own
     read -p "Do you want to test against a Payara Server built from the source? Select no if you want to provide the path to the Payara Server install yourself. (y/n) [y] " RUN_FROM_SOURCE
+
+    # Check if we want to save these settings as a custom properties file
+    read -p "Do you want to save these settings as a custom properties file? (y/n) [n] " SAVE_AS_PROPERTIES_FILE
 fi
+
+# Save the properties as a properties file
+if [ "$SAVE_AS_PROPERTIES_FILE" != "n" ];then
+	FILENAME="test-suite-config-$(date +%Y-%m-%d-%H-%M-%S).properties"
+	touch ./$FILENAME
+	echo "RUN_ALL_TESTS=$RUN_ALL_TESTS" >> $FILENAME
+	echo "STABLE_ONLY=$STABLE_ONLY" >> $FILENAME
+	echo "FAIL_AT_END=$FAIL_AT_END" >> $FILENAME
+	echo "QUICK_ONLY=$QUICK_ONLY" >> $FILENAME
+	echo "RUN_FROM_SOURCE=$RUN_FROM_SOURCE" >> $FILENAME
+	echo "" >> $FILENAME
+	echo "RUN_PAYARA_PRIVATE_TESTS=$RUN_PAYARA_PRIVATE_TESTS" >> $FILENAME
+	echo "STABLE_PAYARA_PRIVATE_ONLY=$STABLE_PAYARA_PRIVATE_ONLY" >> $FILENAME
+	echo "QUICK_PAYARA_PRIVATE_ONLY=$QUICK_PAYARA_PRIVATE_ONLY" >> $FILENAME
+	echo "RUN_SAMPLES_TESTS=$RUN_SAMPLES_TESTS" >> $FILENAME	
+	echo "STABLE_SAMPLES_ONLY=$STABLE_SAMPLES_ONLY" >> $FILENAME
+	echo "RUN_CARGO_TRACKER_TESTS=$RUN_CARGO_TRACKER_TESTS" >> $FILENAME
+	echo "RUN_GLASSFISH_TESTS=$RUN_GLASSFISH_TESTS" >> $FILENAME
+	echo "QUICKLOOK_ONLY=$QUICKLOOK_ONLY" >> $FILENAME
+	echo "RUN_MOJARRA_TESTS=$RUN_MOJARRA_TESTS" >> $FILENAME
+	echo "" >> $FILENAME
+	echo "PAYARA_HOME=$PAYARA_HOME" >> $FILENAME
+	echo "MICRO_JAR=$MICRO_JAR" >> $FILENAME
+	echo "PAYARA_SOURCE=$PAYARA_SOURCE" >> $FILENAME
+	echo "SAVE_AS_PROPERTIES_FILE=n" >> $FILENAME
+	echo "Saved provided properties as $FILENAME"
+fi
+
 
 # Check if PAYARA_SOURCE has been set if it's needed
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_GLASSFISH_TESTS" != "n" ] || [ "$RUN_FROM_SOURCE" != "n" ]; then

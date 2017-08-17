@@ -12,3 +12,6 @@
 	path = Private/PayaraTests-Private
 	url = git@bitbucket.org:payara/payaratests-private
         branch = Payara-4.1.1.171-Tests
+[submodule "Public/JavaEE8-Samples"]
+	path = Public/JavaEE8-Samples
+	url = https://github.com/javaee-samples/javaee8-samples

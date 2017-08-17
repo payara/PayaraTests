@@ -363,8 +363,8 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             PAYARA_PRIVATE_TEST_RESULT=$?
         fi
     fi
-    if [ "RUN_STABILITY_STREAM_VERSION_VALIDATOR_TEST" != "n" ];then
-	mvn clean test -U -Ppayara-remote,all-tests -Dpayara.home=$PAYARA_HOME -Dpayara.source=$PAYARA_SOURCE -f Private/PayaraTests-Private/stability-stream-version-validator/pom.xml
+    if [ "RUN_STABILITY_STREAM_VERSION_VALIDATOR_TEST" == "y" ];then
+	mvn clean test -U -Ppayara-remote,all-tests -Dpayara.source=$PAYARA_SOURCE -f Private/PayaraTests-Private/stability-stream-version-validator/pom.xml
 	STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=$?
     fi
 fi

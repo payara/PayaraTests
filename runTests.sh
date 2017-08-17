@@ -42,7 +42,7 @@ if [ ! $INTERACTIVE ]; then
         # If one was provided, grab its properties
         . $PROPERTIES_FILE
     else
-	# If one wasn't provided, just grab the ones from the default properties file
+	    # If one wasn't provided, just grab the ones from the default properties file
         . ./test-suite-config.properties
     fi
 # If interactive mode was selected
@@ -114,7 +114,7 @@ else
 fi
 
 # Save the properties as a properties file
-if [ "$SAVE_AS_PROPERTIES_FILE" != "n" ];then
+if [ "$SAVE_AS_PROPERTIES_FILE" == "y" ];then
 	FILENAME="test-suite-config-$(date +%Y-%m-%d-%H-%M-%S).properties"
 	touch ./$FILENAME
 	echo "RUN_ALL_TESTS=$RUN_ALL_TESTS" >> $FILENAME

@@ -439,19 +439,12 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
 	    # Fail at end
 	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-    else
-	    # Fail fast
-	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-    fi
-
-    # Run the Cargo Tracker tests against embedded web
-    if [ "$FAIL_AT_END" != "n" ]; then
-	    # Fail at end
 	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
     else
 	    # Fail fast
+	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
 	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
     fi

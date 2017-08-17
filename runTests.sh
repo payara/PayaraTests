@@ -87,6 +87,8 @@ else
             read -p "Do you only want to run the stable tests? (y/n) [y] " STABLE_SAMPLES_ONLY
         fi
 
+	read -p "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
+
         # Check if we want to run the Cargo Tracker tests
         read -p "Do you want to run the Cargo Tracker tests? (y/n) [y] " RUN_CARGO_TRACKER_TESTS
 
@@ -250,6 +252,7 @@ echo ""
 # Initialise the exit variables
 PAYARA_PRIVATE_TEST_RESULT=0
 SAMPLES_TEST_RESULT=0
+SAMPLES_EE8_TEST_RESULT=0
 CARGO_TRACKER_TEST_RESULT=0
 GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
@@ -355,6 +358,26 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
     fi
 fi
 
+# Run the Java EE 8 Samples tests if selected
+if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
+    # No unstable tests yet defined so ignore for now and run it all
+    echo ""
+    echo "#######################################"
+    echo "# Running All Java EE 8 Samples Tests #"
+    echo "#######################################"
+    echo ""
+    # Check if we should fail at end or not
+    if [ "$FAIL_AT_END" != "n" ];then
+	    # Fail at end
+	    mvn clean test -U -Ppayara-remote,payara-embedded -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8_Samples/pom.xml
+            SAMPLES_EE8_RESULT=$?
+    else
+	    # Fail fast
+	    mvn clean test -U -Ppayara-remote,payara-embedded -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8_Samples/pom.xml
+	    SAMPLES_EE8_RESULT=$?
+    fi
+fi
+
 # Run the Cargo Tracker tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
     # Run the Cargo Tracker tests
@@ -446,6 +469,6 @@ $ASADMIN stop-database --dbport 1528 || true
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ]; then
     exit 1
 fi

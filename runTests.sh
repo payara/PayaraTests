@@ -247,7 +247,11 @@ echo "# Setting up the test domain - Errors matter again! #"
 echo "#####################################################"
 echo ""
 # Create the Test Domain
-$ASADMIN create-domain --template $DOMAIN_TEMPLATE_PATH --nopassword $DOMAIN_NAME
+if [ "USE_DEFAULT_DOMAIN_TEMPLATE" != "n" ];then
+	$ASADMIN create-domain --template $DOMAIN_TEMPLATE_PATH --nopassword $DOMAIN_NAME
+else
+	$ASADMIN create-domain --nopassword $DOMAIN_NAME
+fi
 
 # Start domain
 $ASADMIN start-domain $DOMAIN_NAME

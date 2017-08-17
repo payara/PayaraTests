@@ -42,7 +42,7 @@ if [ ! $INTERACTIVE ]; then
         # If one was provided, grab its properties
         . $PROPERTIES_FILE
     else
-	    # If one wasn't provided, just grab the ones from the default properties file
+	 # If one wasn't provided, just grab the ones from the default properties file
         . ./test-suite-config.properties
     fi
 # If interactive mode was selected

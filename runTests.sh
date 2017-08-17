@@ -76,6 +76,8 @@ else
                 # Check if we only want to run quick tests
                 read -p "Do you only want to run quick tests? (y/n) [y] " QUICK_PAYARA_PRIVATE_ONLY
             fi
+
+	    read -p "Do you want to run the stability stream version validator test? (y/n) [n] " RUN_STABILITY_STREAM_VERSION_VALIDATOR_TEST
         fi
         
         # Check if we want to run the Java EE 7 Samples tests
@@ -253,6 +255,7 @@ SAMPLES_TEST_RESULT=0
 CARGO_TRACKER_TEST_RESULT=0
 GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
+STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=0
 
 # Run the private Payara tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
@@ -311,6 +314,10 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -f Private/PayaraTests-Private/pom.xml
             PAYARA_PRIVATE_TEST_RESULT=$?
         fi
+    fi
+    if [ "RUN_STABILITY_STREAM_VERSION_VALIDATOR_TEST" != "n" ];then
+	mvn clean test -U -Ppayara-remote,all-tests -Dpayara.home=$PAYARA_HOME -Dpayara.source=$PAYARA_SOURCE -f Private/PayaraTests-Private/stability-stream-version-validator/pom.xml
+	STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=$?
     fi
 fi
 
@@ -446,6 +453,6 @@ $ASADMIN stop-database --dbport 1528 || true
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ]; then
     exit 1
 fi

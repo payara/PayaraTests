@@ -351,8 +351,16 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             PAYARA_PRIVATE_TEST_RESULT=$?
         fi
     fi
+
+    # If we've selected to run the Stability Stream Version Validator - an independent project within Tests-Private
     if [ "RUN_STABILITY_STREAM_VERSION_VALIDATOR_TEST" == "y" ];then
-	mvn clean test -U -Ppayara-remote,all-tests -Dpayara.source=$PAYARA_SOURCE -f Private/PayaraTests-Private/stability-stream-version-validator/pom.xml
+	echo ""
+	echo "##############################################"
+	echo "# Running Stability Stream Version Validator #"
+	echo "##############################################"
+	echo ""
+	# Only one test currently in this project
+	mvn clean test -U -Dpayara.source=$PAYARA_SOURCE -f Private/PayaraTests-Private/stability-stream-version-validator/pom.xml
 	STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=$?
     fi
 fi

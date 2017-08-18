@@ -114,6 +114,9 @@ else
     # Check if we want to use the distribution from the source, or provide our own
     read -p "Do you want to test against a Payara Server built from the source? Select no if you want to provide the path to the Payara Server install yourself. (y/n) [y] " RUN_FROM_SOURCE
 
+    # Check if we want to use the payara-domain instead of the default domain
+    read -p "Do you want to use the default glassfish compatible domain (domain1) instead of the Payara Domain (payaradomain)? (y/n) [y] " USE_DEFAULT_DOMAIN_TEMPLATE
+    
     # Check if we want to save these settings as a custom properties file
     read -p "Do you want to save these settings as a custom properties file? (y/n) [n] " SAVE_AS_PROPERTIES_FILE
 fi
@@ -239,7 +242,11 @@ echo "# Setting up the test domain - Errors matter again! #"
 echo "#####################################################"
 echo ""
 # Create the Test Domain
-$ASADMIN create-domain --nopassword $DOMAIN_NAME
+if [ "USE_DEFAULT_DOMAIN_TEMPLATE" != "n" ];then
+	$ASADMIN create-domain --template $PAYARA_HOME/glassfish/common/templates/gf/payara-domain.jar --nopassword $DOMAIN_NAME
+else
+	$ASADMIN create-domain --nopassword $DOMAIN_NAME
+fi
 
 # Start domain
 $ASADMIN start-domain $DOMAIN_NAME

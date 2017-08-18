@@ -42,7 +42,7 @@ if [ ! $INTERACTIVE ]; then
         # If one was provided, grab its properties
         . $PROPERTIES_FILE
     else
-        # If one wasn't provided, just grab the ones from the default properties file
+	 # If one wasn't provided, just grab the ones from the default properties file
         . ./test-suite-config.properties
     fi
 # If interactive mode was selected
@@ -92,6 +92,9 @@ else
         # Check if we want to run the Cargo Tracker tests
         read -p "Do you want to run the Cargo Tracker tests? (y/n) [y] " RUN_CARGO_TRACKER_TESTS
 
+	# Check if we want to run the Cargo Tracker tests against embedded
+	read -p "Do you want to run the Cargo Tracker tests against embedded? (y/n) [y] " RUN_EMBEDDED_TESTS
+
         # Check if we want to run the GlassFish tests
         read -p "DO you want to run the GlassFish tests? (y/n) [y] " RUN_GLASSFISH_TESTS
 
@@ -110,7 +113,38 @@ else
     
     # Check if we want to use the distribution from the source, or provide our own
     read -p "Do you want to test against a Payara Server built from the source? Select no if you want to provide the path to the Payara Server install yourself. (y/n) [y] " RUN_FROM_SOURCE
+
+    # Check if we want to save these settings as a custom properties file
+    read -p "Do you want to save these settings as a custom properties file? (y/n) [n] " SAVE_AS_PROPERTIES_FILE
 fi
+
+# Save the properties as a properties file
+if [ "$SAVE_AS_PROPERTIES_FILE" == "y" ];then
+	FILENAME="test-suite-config-$(date +%Y-%m-%d-%H-%M-%S).properties"
+	touch ./$FILENAME
+	echo "RUN_ALL_TESTS=$RUN_ALL_TESTS" >> $FILENAME
+	echo "STABLE_ONLY=$STABLE_ONLY" >> $FILENAME
+	echo "FAIL_AT_END=$FAIL_AT_END" >> $FILENAME
+	echo "QUICK_ONLY=$QUICK_ONLY" >> $FILENAME
+	echo "RUN_FROM_SOURCE=$RUN_FROM_SOURCE" >> $FILENAME
+	echo "" >> $FILENAME
+	echo "RUN_PAYARA_PRIVATE_TESTS=$RUN_PAYARA_PRIVATE_TESTS" >> $FILENAME
+	echo "STABLE_PAYARA_PRIVATE_ONLY=$STABLE_PAYARA_PRIVATE_ONLY" >> $FILENAME
+	echo "QUICK_PAYARA_PRIVATE_ONLY=$QUICK_PAYARA_PRIVATE_ONLY" >> $FILENAME
+	echo "RUN_SAMPLES_TESTS=$RUN_SAMPLES_TESTS" >> $FILENAME	
+	echo "STABLE_SAMPLES_ONLY=$STABLE_SAMPLES_ONLY" >> $FILENAME
+	echo "RUN_CARGO_TRACKER_TESTS=$RUN_CARGO_TRACKER_TESTS" >> $FILENAME
+	echo "RUN_GLASSFISH_TESTS=$RUN_GLASSFISH_TESTS" >> $FILENAME
+	echo "QUICKLOOK_ONLY=$QUICKLOOK_ONLY" >> $FILENAME
+	echo "RUN_MOJARRA_TESTS=$RUN_MOJARRA_TESTS" >> $FILENAME
+	echo "" >> $FILENAME
+	echo "PAYARA_HOME=$PAYARA_HOME" >> $FILENAME
+	echo "MICRO_JAR=$MICRO_JAR" >> $FILENAME
+	echo "PAYARA_SOURCE=$PAYARA_SOURCE" >> $FILENAME
+	echo "SAVE_AS_PROPERTIES_FILE=n" >> $FILENAME
+	echo "Saved provided properties as $FILENAME"
+fi
+
 
 # Check if PAYARA_SOURCE has been set if it's needed
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_GLASSFISH_TESTS" != "n" ] || [ "$RUN_FROM_SOURCE" != "n" ]; then
@@ -256,6 +290,8 @@ CARGO_TRACKER_TEST_RESULT=0
 GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
 STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=0
+EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=0
+EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=0
 
 # Run the private Payara tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
@@ -382,6 +418,30 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
     fi
 fi
 
+# Run the embedded tests if selected
+if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
+    # Run the Cargo Tracker tests against embedded all
+    echo ""
+    echo "##############################"
+    echo "# Running Embedded All Tests #"
+    echo "##############################"
+    echo ""
+    # Check if we should fail at end or not
+    if [ "$FAIL_AT_END" != "n" ]; then
+	    # Fail at end
+	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+    else
+	    # Fail fast
+	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+    fi
+fi
+
 # Run the GlassFish tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_GLASSFISH_TESTS" != "n" ]; then
     # If we've selected to only run the quicklook tests...
@@ -453,6 +513,6 @@ $ASADMIN stop-database --dbport 1528 || true
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ]; then
     exit 1
 fi

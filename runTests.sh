@@ -191,11 +191,6 @@ if [ ! -z "$payara_update_version" ]; then
     PAYARA_VERSION=$PAYARA_VERSION.$payara_update_version
 fi
 
-# Check if we need to use a different domain template
-if [ $USE_DEFAULT_DOMAIN_TEMPLATE != "n" ];then
-    DOMAIN_TEMPLATE_PATH=$PAYARA_HOME/glassfish/common/templates/gf/payara-domain.jar
-fi
-
 ###################################################
 ### Create and Configure a Domain for the Tests ###
 ###################################################
@@ -250,7 +245,7 @@ echo "#####################################################"
 echo ""
 # Create the Test Domain
 if [ "USE_DEFAULT_DOMAIN_TEMPLATE" != "n" ];then
-	$ASADMIN create-domain --template $DOMAIN_TEMPLATE_PATH --nopassword $DOMAIN_NAME
+	$ASADMIN create-domain --template $PAYARA_HOME/glassfish/common/templates/gf/payara-domain.jar --nopassword $DOMAIN_NAME
 else
 	$ASADMIN create-domain --nopassword $DOMAIN_NAME
 fi

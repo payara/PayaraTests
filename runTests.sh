@@ -47,6 +47,9 @@ if [ ! $INTERACTIVE ]; then
     fi
 # If interactive mode was selected
 else
+    # Check if we want to test against the payara 5 branch
+    read -p "Do you want to test against Payara-5? (y/n) [n] " TEST_PAYARA_5
+
     # Check if we want to run all of the tests
     read -p "Do you want to run all tests? (y/n) [y] " RUN_ALL_TESTS
 
@@ -161,7 +164,13 @@ fi
 
 if [ "$RUN_FROM_SOURCE" != "n" ]; then
     # Set the Payara Server and Micro locations
-    PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara41
+    if [ "$TEST_PAYARA_5" != "y" ]; then
+	echo "Using payara41"
+        PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara41
+    else
+	echo "Using payara50"
+	PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara50    
+    fi
     MICRO_JAR=$PAYARA_SOURCE/appserver/extras/payara-micro/payara-micro-distribution/target/payara-micro.jar
 else
     # Check if PAYARA_HOME has been set
@@ -182,14 +191,20 @@ else
     fi
 fi
 
+echo "Ready to load props"
+
 # Construct the Payara Server version from the properties within the glassfish-version.properties file
 . $PAYARA_HOME/glassfish/config/branding/glassfish-version.properties 2>/dev/null
 PAYARA_VERSION=$major_version.$minor_version.$update_version.$payara_version
+#PAYARA_VERSION="5.1.2.173-SNAPSHOT"
+echo "Ready to get version"
 
 # Check if we need to also add the payara_update_version property
 if [ ! -z "$payara_update_version" ]; then
     PAYARA_VERSION=$PAYARA_VERSION.$payara_update_version
 fi
+
+echo "Ready to create domain"
 
 ###################################################
 ### Create and Configure a Domain for the Tests ###

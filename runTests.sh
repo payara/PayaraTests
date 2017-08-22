@@ -47,6 +47,9 @@ if [ ! $INTERACTIVE ]; then
     fi
 # If interactive mode was selected
 else
+    # Check if we want to test against the payara 5 branch
+    read -p "Do you want to test against Payara-5? (y/n) [n] " TEST_PAYARA_5
+
     # Check if we want to run all of the tests
     read -p "Do you want to run all tests? (y/n) [y] " RUN_ALL_TESTS
 
@@ -88,6 +91,8 @@ else
             # Check if we want to only run the stable tests
             read -p "Do you only want to run the stable tests? (y/n) [y] " STABLE_SAMPLES_ONLY
         fi
+
+	read -p "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
 
         # Check if we want to run the Cargo Tracker tests
         read -p "Do you want to run the Cargo Tracker tests? (y/n) [y] " RUN_CARGO_TRACKER_TESTS
@@ -159,7 +164,13 @@ fi
 
 if [ "$RUN_FROM_SOURCE" != "n" ]; then
     # Set the Payara Server and Micro locations
-    PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara41
+    if [ "$TEST_PAYARA_5" != "y" ]; then
+	echo "Using payara41"
+       PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara41
+    else
+	echo "Using payara50"
+	PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara50    
+    fi
     MICRO_JAR=$PAYARA_SOURCE/appserver/extras/payara-micro/payara-micro-distribution/target/payara-micro.jar
 else
     # Check if PAYARA_HOME has been set
@@ -293,6 +304,7 @@ echo ""
 # Initialise the exit variables
 PAYARA_PRIVATE_TEST_RESULT=0
 SAMPLES_TEST_RESULT=0
+SAMPLES_EE8_TEST_RESULT=0
 CARGO_TRACKER_TEST_RESULT=0
 GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
@@ -413,6 +425,26 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
     fi
 fi
 
+# Run the Java EE 8 Samples tests if selected
+if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
+    # No unstable tests yet defined so ignore for now and run it all
+    echo ""
+    echo "#######################################"
+    echo "# Running All Java EE 8 Samples Tests #"
+    echo "#######################################"
+    echo ""
+    # Check if we should fail at end or not
+    if [ "$FAIL_AT_END" != "n" ];then
+	    # Fail at end
+	    mvn clean test -U -Ppayara-remote,payara-embedded -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8_Samples/pom.xml
+            SAMPLES_EE8_RESULT=$?
+    else
+	    # Fail fast
+	    mvn clean test -U -Ppayara-remote,payara-embedded -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8_Samples/pom.xml
+	    SAMPLES_EE8_RESULT=$?
+    fi
+fi
+
 # Run the Cargo Tracker tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
     # Run the Cargo Tracker tests
@@ -528,6 +560,6 @@ $ASADMIN stop-database --dbport 1528 || true
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ]; then
     exit 1
 fi

@@ -256,9 +256,9 @@ echo "#####################################################"
 echo ""
 # Create the Test Domain
 if [ "USE_DEFAULT_DOMAIN_TEMPLATE" != "n" ];then
-	$ASADMIN create-domain --template $PAYARA_HOME/glassfish/common/templates/gf/payara-domain.jar --nopassword $DOMAIN_NAME
-else
 	$ASADMIN create-domain --nopassword $DOMAIN_NAME
+else
+	$ASADMIN create-domain --template $PAYARA_HOME/glassfish/common/templates/gf/payara-domain.jar --nopassword $DOMAIN_NAME
 fi
 
 # Start domain

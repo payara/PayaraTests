@@ -345,11 +345,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             # Check if we should fail at end or not
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
-                mvn clean test -U -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -fae -f Private/PayaraTests-Private/pom.xml
+                mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -fae -f Private/PayaraTests-Private/pom.xml
                 PAYARA_PRIVATE_TEST_RESULT=$?
             else
                 # Fail fast
-                mvn clean test -U -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -f Private/PayaraTests-Private/pom.xml
+                mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version=$PAYARA_VERSION -Dpayara.home=$PAYARA_HOME -Dmicro.jar=$MICRO_JAR -f Private/PayaraTests-Private/pom.xml
                 PAYARA_PRIVATE_TEST_RESULT=$?
             fi
         fi

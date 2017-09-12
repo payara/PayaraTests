@@ -170,8 +170,8 @@ if [ "$RUN_FROM_SOURCE" != "n" ]; then
 	echo "Using payara41"
        PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara41
     else
-	echo "Using payara50"
-	PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara50    
+	echo "Using payara5"
+	PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara5    
     fi
     MICRO_JAR=$PAYARA_SOURCE/appserver/extras/payara-micro/payara-micro-distribution/target/payara-micro.jar
 else

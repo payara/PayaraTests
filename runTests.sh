@@ -120,7 +120,7 @@ else
     read -p "Do you want to test against a Payara Server built from the source? Select no if you want to provide the path to the Payara Server install yourself. (y/n) [y] " RUN_FROM_SOURCE
 
     # Check if we want to use the payara-domain instead of the default domain
-    read -p "Do you want to use the default glassfish compatible domain (domain1) or the Payara Domain (payaradomain)? (y/n) [y] " USE_DEFAULT_DOMAIN_TEMPLATE
+    read -p "Do you want to use the default glassfish compatible domain (domain1) instead of the Payara Domain (payaradomain)? (y/n) [y] " USE_DEFAULT_DOMAIN_TEMPLATE
     
     # Check if we want to save these settings as a custom properties file
     read -p "Do you want to save these settings as a custom properties file? (y/n) [n] " SAVE_AS_PROPERTIES_FILE
@@ -310,9 +310,9 @@ SAMPLES_EE8_TEST_RESULT=0
 CARGO_TRACKER_TEST_RESULT=0
 GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
+STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=0
 EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=0
 EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=0
-STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=0
 
 # Run the private Payara tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
@@ -562,6 +562,6 @@ $ASADMIN stop-database --dbport 1528 || true
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ]; then
     exit 1
 fi

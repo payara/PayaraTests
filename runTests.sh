@@ -183,7 +183,7 @@ else
 
     # We only need Micro if we're running the unstable internal Payara private tests
     if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
-        if [ "$STABLE_ONLY" = "n" ] || [ "$STABLE_PAYARA_PRIVATE_ONLY" = "n" ]; then
+        if [ "$STABLE_ONLY" != "n" ] || [ "$STABLE_PAYARA_PRIVATE_ONLY" != "n" ]; then
             # Check if MICRO_JAR has been set
             if [ -z "$MICRO_JAR" ]; then
                 # Get the Payara Micro that we're going to run tests against
@@ -195,7 +195,16 @@ fi
 
 # Construct the Payara Server version from the properties within the glassfish-version.properties file
 . $PAYARA_HOME/glassfish/config/branding/glassfish-version.properties 2>/dev/null
-PAYARA_VERSION=$major_version.$minor_version.$update_version.$payara_version
+
+if [ "$TEST_PAYARA_5" = "y" ]; then
+    PAYARA_VERSION=$major_version.$minor_version
+    
+    if [ ! -z "$update_version" ]; then
+        PAYARA_VERSION=$PAYARA_VERSION.$update_version
+    fi
+else
+    PAYARA_VERSION=$major_version.$minor_version.$update_version.$payara_version
+fi
 
 # Check if we need to also add the payara_update_version property
 if [ ! -z "$payara_update_version" ]; then

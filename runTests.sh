@@ -183,7 +183,7 @@ else
 
     # We only need Micro if we're running the unstable internal Payara private tests
     if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
-        if [ "$STABLE_ONLY" = "n" ] || [ "$STABLE_PAYARA_PRIVATE_ONLY" = "n" ]; then
+        if [ "$STABLE_ONLY" != "n" ] || [ "$STABLE_PAYARA_PRIVATE_ONLY" != "n" ]; then
             # Check if MICRO_JAR has been set
             if [ -z "$MICRO_JAR" ]; then
                 # Get the Payara Micro that we're going to run tests against

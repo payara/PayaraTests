@@ -92,7 +92,7 @@ else
             read -p "Do you only want to run the stable tests? (y/n) [y] " STABLE_SAMPLES_ONLY
             
             # Check if we want to run the samples against Payara Micro
-            read -p "Do you want to run the samples against Payara Micro? (y/n) [y] " RUN_SAMPLES_TESTS_MICRO
+            read -p "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_SAMPLES_TESTS_MICRO
         fi
 
         read -p "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
@@ -100,7 +100,7 @@ else
         # If we do want to run the Java EE 8 Samples tests...
         if [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             # Check if we want to run the samples against Payara Micro
-            read -p "Do you want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
+            read -p "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
         fi
 
         # Check if we want to run the Cargo Tracker tests
@@ -184,7 +184,7 @@ else
     read -p "Do you want to test against a Payara Server built from the source? Select no if you want to provide the path to the Payara Server install yourself. (y/n) [y] " RUN_FROM_SOURCE
 
     # Check if we want to use the payara-domain instead of the default domain
-    read -p "Do you want to use the default glassfish compatible domain (domain1) instead of the Payara Domain (payaradomain)? (y/n) [y] " USE_DEFAULT_DOMAIN_TEMPLATE
+    read -p "Do you want to use the default glassfish compatible domain (domain1) instead of the Production Domain (production)? (y/n) [y] " USE_DEFAULT_DOMAIN_TEMPLATE
 
 fi
 

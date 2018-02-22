@@ -90,15 +90,24 @@ else
         if [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             # Check if we want to only run the stable tests
             read -p "Do you only want to run the stable tests? (y/n) [y] " STABLE_SAMPLES_ONLY
+            
+            # Check if we want to run the samples against Payara Micro
+            read -p "Do you want to run the samples against Payara Micro? (y/n) [y] " RUN_SAMPLES_TESTS_MICRO
         fi
 
-	read -p "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
+        read -p "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
+        
+        # If we do want to run the Java EE 8 Samples tests...
+        if [ "$RUN_SAMPLES_TESTS" != "n" ]; then
+            # Check if we want to run the samples against Payara Micro
+            read -p "Do you want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
+        fi
 
         # Check if we want to run the Cargo Tracker tests
         read -p "Do you want to run the Cargo Tracker tests? (y/n) [y] " RUN_CARGO_TRACKER_TESTS
 
-	# Check if we want to run the Cargo Tracker tests against embedded
-	read -p "Do you want to run the Cargo Tracker tests against embedded? (y/n) [y] " RUN_EMBEDDED_TESTS
+        # Check if we want to run the Cargo Tracker tests against embedded
+        read -p "Do you want to run the Cargo Tracker tests against embedded? (y/n) [y] " RUN_EMBEDDED_CARGO_TESTS
 
         # Check if we want to run the GlassFish tests
         read -p "DO you want to run the GlassFish tests? (y/n) [y] " RUN_GLASSFISH_TESTS
@@ -111,6 +120,61 @@ else
         
         # Check if we want to run the Mojarra tests
         read -p "Do you want to run the Mojarra tests? (y/n) [y] " RUN_MOJARRA_TESTS
+        
+        # Check if we want to run the MicroProfile TCK Tests
+        read -p "Do you want to run the MicroProfile TCK Tests? (y/n) [y] " RUN_MP_TCK_TESTS
+        
+        # If we do want to run the MicroProfile TCK tests...
+        if [ "$RUN_MP_TCK_TESTS" != "n" ]; then
+            
+            # Check if we want to run all of the TCKs
+            read -p "Do you want to run all of the TCKs? (y/n) [y] " RUN_ALL_MP_TCK_TESTS
+            
+            # If we do want to run all of the TCKs...
+            if [ "$RUN_ALL_MP_TCK_TESTS" != "n" ]; then
+                
+                # Check if we want to run them all against Micro as well
+                read -p "Do you also want to run all of the TCKs against Payara Micro? (y/n) [y] " RUN_ALL_MP_TCK_TESTS_MICRO
+
+                # Check if we want to run them all against Embedded as well
+                read -p "Do you also want to run all of the TCKs against Payara Embedded? (y/n) [y] " RUN_ALL_MP_TCK_TESTS_EMBEDDED
+            else             
+                read -p "Do you want to run the Config TCK? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS
+                    
+                if [ "$RUN_MP_CONFIG_TCK_TESTS" != "n" ]; then
+                    read -p "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_MICRO
+                    read -p "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_EMBEDDED
+                fi
+                    
+                read -p "Do you want to run the Health TCK? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS
+                    
+                if [ "$RUN_MP_HEALTH_TCK_TESTS" != "n" ]; then
+                    read -p "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_MICRO
+                    read -p "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_EMBEDDED
+                fi
+                    
+                read -p "Do you want to run the Fault Tolerance TCK? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS
+                    
+                if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS" != "n" ]; then
+                    read -p "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO
+                    read -p "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED
+                fi
+                    
+                read -p "Do you want to run the Metrics TCK? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS
+                    
+                if [ "$RUN_MP_METRICS_TCK_TESTS" != "n" ]; then
+                    read -p "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_MICRO
+                    read -p "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_EMBEDDED
+                fi
+                    
+                read -p "Do you want to run the JWT Auth TCK? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS
+                    
+                if [ "$RUN_MP_JWT_AUTH_TCK_TESTS" != "n" ]; then
+                        read -p "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_MICRO
+                        read -p "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED
+                fi
+            fi
+        fi
     fi
 
     # Check if we want to fail at end or not
@@ -121,40 +185,8 @@ else
 
     # Check if we want to use the payara-domain instead of the default domain
     read -p "Do you want to use the default glassfish compatible domain (domain1) instead of the Payara Domain (payaradomain)? (y/n) [y] " USE_DEFAULT_DOMAIN_TEMPLATE
-    
-    # Check if we want to save these settings as a custom properties file
-    read -p "Do you want to save these settings as a custom properties file? (y/n) [n] " SAVE_AS_PROPERTIES_FILE
-fi
 
-# Save the properties as a properties file
-if [ "$SAVE_AS_PROPERTIES_FILE" == "y" ];then
-	FILENAME="test-suite-config-$(date +%Y-%m-%d-%H-%M-%S).properties"
-	touch ./$FILENAME
-	echo "RUN_ALL_TESTS=$RUN_ALL_TESTS" >> $FILENAME
-	echo "STABLE_ONLY=$STABLE_ONLY" >> $FILENAME
-	echo "FAIL_AT_END=$FAIL_AT_END" >> $FILENAME
-	echo "QUICK_ONLY=$QUICK_ONLY" >> $FILENAME
-	echo "RUN_FROM_SOURCE=$RUN_FROM_SOURCE" >> $FILENAME
-	echo "" >> $FILENAME
-	echo "RUN_PAYARA_PRIVATE_TESTS=$RUN_PAYARA_PRIVATE_TESTS" >> $FILENAME
-	echo "STABLE_PAYARA_PRIVATE_ONLY=$STABLE_PAYARA_PRIVATE_ONLY" >> $FILENAME
-	echo "QUICK_PAYARA_PRIVATE_ONLY=$QUICK_PAYARA_PRIVATE_ONLY" >> $FILENAME
-	echo "RUN_SAMPLES_TESTS=$RUN_SAMPLES_TESTS" >> $FILENAME	
-	echo "RUN_EE8_SAMPLES_TESTS=$RUN_EE8_SAMPLES_TESTS" >> $FILENAME
-	echo "STABLE_SAMPLES_ONLY=$STABLE_SAMPLES_ONLY" >> $FILENAME
-	echo "RUN_CARGO_TRACKER_TESTS=$RUN_CARGO_TRACKER_TESTS" >> $FILENAME
-	echo "RUN_GLASSFISH_TESTS=$RUN_GLASSFISH_TESTS" >> $FILENAME
-	echo "QUICKLOOK_ONLY=$QUICKLOOK_ONLY" >> $FILENAME
-	echo "RUN_MOJARRA_TESTS=$RUN_MOJARRA_TESTS" >> $FILENAME
-	echo "TEST_PAYARA_5=$TEST_PAYARA_5" >> $FILENAME
-	echo "" >> $FILENAME
-	echo "PAYARA_HOME=$PAYARA_HOME" >> $FILENAME
-	echo "MICRO_JAR=$MICRO_JAR" >> $FILENAME
-	echo "PAYARA_SOURCE=$PAYARA_SOURCE" >> $FILENAME
-	echo "SAVE_AS_PROPERTIES_FILE=n" >> $FILENAME
-	echo "Saved provided properties as $FILENAME"
 fi
-
 
 # Check if PAYARA_SOURCE has been set if it's needed
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_GLASSFISH_TESTS" != "n" ] || [ "$RUN_FROM_SOURCE" != "n" ]; then
@@ -181,7 +213,7 @@ else
         read -p "Please enter the path to the Payara Server install that you would like to test: " PAYARA_HOME
     fi
 
-    # We only need Micro if we're running the unstable internal Payara private tests
+    # We only need Micro if we're running tests against it
     if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
         if [ "$STABLE_ONLY" != "n" ] || [ "$STABLE_PAYARA_PRIVATE_ONLY" != "n" ]; then
             # Check if MICRO_JAR has been set
@@ -191,6 +223,14 @@ else
             fi
         fi
     fi
+    
+    if [ -z "$MICRO_JAR" ]; then
+        if [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ] || [ "$RUN_MP_CONFIG_TCK_TESTS_MICRO" != "n" ] || [ "$RUN_MP_HEALTH_TCK_TESTS_MICRO" != "n" ] || [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO" != "n" ] || [ "$RUN_MP_METRICS_TCK_TESTS_MICRO" != "n" ] || [ "$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+            # Get the Payara Micro that we're going to run tests against
+            read -p "Please enter the path to the Payara Micro JAR that you would like to test: " MICRO_JAR
+        fi
+    fi
+    
 fi
 
 # Construct the Payara Server version from the properties within the glassfish-version.properties file
@@ -209,6 +249,62 @@ fi
 # Check if we need to also add the payara_update_version property
 if [ ! -z "$payara_update_version" ]; then
     PAYARA_VERSION=$PAYARA_VERSION.$payara_update_version
+fi
+
+if [ $INTERACTIVE ]; then
+    # Check if we want to save these settings as a custom properties file
+    read -p "Do you want to save these settings as a custom properties file? (y/n) [n] " SAVE_AS_PROPERTIES_FILE
+
+    # Save the properties as a properties file
+    if [ "$SAVE_AS_PROPERTIES_FILE" == "y" ];then
+	FILENAME="test-suite-config-$(date +%Y-%m-%d-%H-%M-%S).properties"
+	touch ./$FILENAME
+	echo "RUN_ALL_TESTS=$RUN_ALL_TESTS" >> $FILENAME
+	echo "STABLE_ONLY=$STABLE_ONLY" >> $FILENAME
+	echo "FAIL_AT_END=$FAIL_AT_END" >> $FILENAME
+	echo "QUICK_ONLY=$QUICK_ONLY" >> $FILENAME
+	echo "RUN_FROM_SOURCE=$RUN_FROM_SOURCE" >> $FILENAME
+	echo "" >> $FILENAME
+	echo "RUN_PAYARA_PRIVATE_TESTS=$RUN_PAYARA_PRIVATE_TESTS" >> $FILENAME
+	echo "STABLE_PAYARA_PRIVATE_ONLY=$STABLE_PAYARA_PRIVATE_ONLY" >> $FILENAME
+	echo "QUICK_PAYARA_PRIVATE_ONLY=$QUICK_PAYARA_PRIVATE_ONLY" >> $FILENAME
+	echo "RUN_SAMPLES_TESTS=$RUN_SAMPLES_TESTS" >> $FILENAME	
+	echo "RUN_SAMPLES_TESTS_MICRO=$RUN_SAMPLES_TESTS_MICRO" >> $FILENAME
+	echo "RUN_EE8_SAMPLES_TESTS=$RUN_EE8_SAMPLES_TESTS" >> $FILENAME
+	echo "RUN_EE8_SAMPLES_TESTS_MICRO=$RUN_EE8_SAMPLES_TESTS_MICRO" >> $FILENAME
+	echo "STABLE_SAMPLES_ONLY=$STABLE_SAMPLES_ONLY" >> $FILENAME
+	echo "RUN_CARGO_TRACKER_TESTS=$RUN_CARGO_TRACKER_TESTS" >> $FILENAME
+	echo "RUN_EMBEDDED_CARGO_TESTS"=$RUN_EMBEDDED_CARGO_TESTS >> $FILENAME
+	echo "RUN_GLASSFISH_TESTS=$RUN_GLASSFISH_TESTS" >> $FILENAME
+	echo "QUICKLOOK_ONLY=$QUICKLOOK_ONLY" >> $FILENAME
+	echo "RUN_MOJARRA_TESTS=$RUN_MOJARRA_TESTS" >> $FILENAME
+	echo "RUN_MP_TCK_TESTS=$RUN_MP_TCK_TESTS" >> $FILENAME
+	echo "RUN_ALL_MP_TCK_TESTS=$RUN_ALL_MP_TCK_TESTS" >> $FILENAME
+	echo "RUN_ALL_MP_TCK_TESTS_MICRO=$RUN_ALL_MP_TCK_TESTS_MICRO" >> $FILENAME
+	echo "RUN_ALL_MP_TCK_TESTS_EMBEDDED=$RUN_ALL_MP_TCK_TESTS_EMBEDDED" >> $FILENAME
+	echo "RUN_MP_CONFIG_TCK_TESTS=$RUN_MP_CONFIG_TCK_TESTS" >> $FILENAME
+	echo "RUN_MP_CONFIG_TCK_TESTS_MICRO=$RUN_MP_CONFIG_TCK_TESTS_MICRO" >> $FILENAME
+	echo "RUN_MP_CONFIG_TCK_TESTS_EMBEDDED=$RUN_MP_CONFIG_TCK_TESTS_EMBEDDED" >> $FILENAME
+	echo "RUN_MP_HEALTH_TCK_TESTS=$RUN_MP_HEALTH_TCK_TESTS" >> $FILENAME
+	echo "RUN_MP_HEALTH_TCK_TESTS_MICRO=$RUN_MP_HEALTH_TCK_TESTS_MICRO" >> $FILENAME
+	echo "RUN_MP_HEALTH_TCK_TESTS_EMBEDDED=$RUN_MP_HEALTH_TCK_TESTS_EMBEDDED" >> $FILENAME
+	echo "RUN_MP_FAULT_TOLERANCE_TCK_TESTS=$RUN_MP_FAULT_TOLERANCE_TCK_TESTS" >> $FILENAME
+	echo "RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO=$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO" >> $FILENAME
+	echo "RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED=$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED" >> $FILENAME
+	echo "RUN_MP_METRICS_TCK_TESTS=$RUN_MP_METRICS_TCK_TESTS" >> $FILENAME
+	echo "RUN_MP_METRICS_TCK_TESTS_MICRO=$RUN_MP_METRICS_TCK_TESTS_MICRO" >> $FILENAME
+	echo "RUN_MP_METRICS_TCK_TESTS_EMBEDDED=$RUN_MP_METRICS_TCK_TESTS_EMBEDDED" >> $FILENAME
+	echo "RUN_MP_JWT_AUTH_TCK_TESTS=$RUN_MP_JWT_AUTH_TCK_TESTS" >> $FILENAME
+	echo "RUN_MP_JWT_AUTH_TCK_TESTS_MICRO=$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO" >> $FILENAME
+	echo "RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED=$RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED" >> $FILENAME
+	echo "TEST_PAYARA_5=$TEST_PAYARA_5" >> $FILENAME
+	echo "" >> $FILENAME
+	echo "PAYARA_HOME=$PAYARA_HOME" >> $FILENAME
+	echo "MICRO_JAR=$MICRO_JAR" >> $FILENAME
+	echo "PAYARA_SOURCE=$PAYARA_SOURCE" >> $FILENAME
+	echo "SAVE_AS_PROPERTIES_FILE=n" >> $FILENAME
+	echo "Saved provided properties as $FILENAME"
+    fi
 fi
 
 ###################################################
@@ -304,6 +400,9 @@ $ASADMIN --passwordfile=$SERVLET_TEST_PASSWORD_FILE create-file-user --groups g1
 ### Run the Selected Tests ###
 ##############################
 
+# Set environment variable so Maven knows where to find Micro
+export MICRO_JAR=$MICRO_JAR
+
 echo ""
 echo ""
 echo ""
@@ -322,6 +421,23 @@ MOJARRA_TEST_RESULT=0
 STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=0
 EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=0
 EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=0
+MP_CONFIG_TCK_TEST_RESULT=0
+MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=0
+MP_CONFIG_TCK_MICRO_TEST_RESULT=0
+MP_HEALTH_TCK_TEST_RESULT=0
+MP_HEALTH_TCK_EMBEDDED_TEST_RESULT=0
+MP_HEALTH_TCK_MICRO_TEST_RESULT=0
+MP_FAULT_TOLERANCE_TCK_TEST_RESULT=0
+MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT=0
+MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=0
+MP_METRICS_TCK_TEST_RESULT=0
+MP_METRICS_TCK_EMBEDDED_TEST_RESULT=0
+MP_METRICS_TCK_MICRO_TEST_RESULT=0
+MP_JWT_AUTH_TCK_TEST_RESULT=0
+MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=0
+MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=0
+SAMPLES_MICRO_TEST_RESULT=0
+SAMPLES_EE8_MICRO_TEST_RESULT=0
 
 # Run the private Payara tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
@@ -393,6 +509,27 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
 	mvn clean test -U -Dpayara.source=$PAYARA_SOURCE -f Private/PayaraTests-Private/stability-stream-version-validator/pom.xml
 	STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=$?
     fi
+
+    echo "### Clearing away created resources, instances etc. ###"
+    # Clear away created resources, instances etc. as the created instances can mess with the other tests (quicklook)
+    $ASADMIN stop-instance instance1 || true
+    $ASADMIN stop-instance instance2 || true
+    $ASADMIN stop-instance RollingUpdatesInstance1 || true
+    $ASADMIN stop-instance RollingUpdatesInstance2 || true
+    $ASADMIN stop-cluster sessionCluster || true
+    $ASADMIN stop-instance hz-member1 || true
+    $ASADMIN stop-instance hz-member2 || true
+    $ASADMIN stop-database --dbport 1528 || true
+    $ASADMIN -p 6048 stop-cluster test-cluster || true
+    $ASADMIN stop-domain test-domain_asadmin || true
+    $ASADMIN delete-instance instance1 || true
+    $ASADMIN delete-instance instance2 || true
+    $ASADMIN delete-instance RollingUpdatesInstance1 || true
+    $ASADMIN delete-instance RollingUpdatesInstance2 || true
+    $ASADMIN delete-cluster sessionCluster || true
+    $ASADMIN delete-instance hz-member1 || true
+    $ASADMIN delete-instance hz-member2 || true
+    $ASADMIN delete-domain test-domain_asadmin || true
 fi
 
 # Run the Java EE 7 Samples tests if selected
@@ -410,10 +547,38 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             # Fail at end
             mvn clean test -U -Ppayara-remote,stable -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
             SAMPLES_TEST_RESULT=$?
+            
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true 
+            
+                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
         else
             # Fail fast
             mvn clean test -U -Ppayara-remote,stable -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
             SAMPLES_TEST_RESULT=$?
+            
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true 
+            
+                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
         fi
     # If we've selected to run all of the tests...
     else
@@ -428,10 +593,38 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             # Fail at end
             mvn clean test -U -Ppayara-remote,all -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
             SAMPLES_TEST_RESULT=$?
+            
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true 
+            
+                mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
         else
             # Fail fast
             mvn clean test -U -Ppayara-remote,all -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
             SAMPLES_TEST_RESULT=$?
+            
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true 
+            
+                mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
         fi
     fi
 fi
@@ -447,12 +640,40 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
     # Check if we should fail at end or not
     if [ "$FAIL_AT_END" != "n" ];then
 	    # Fail at end
-	    mvn clean test -U -Ppayara-remote,payara-embedded -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8-Samples/pom.xml
-            SAMPLES_EE8_RESULT=$?
+	    mvn clean test -U -Ppayara-remote -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE8-Samples/pom.xml
+        SAMPLES_EE8_RESULT=$?
+        
+        # Run against Micro if selected
+        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+            # Shut down the remote domain to stop port clashes
+            $ASADMIN stop-domain $DOMAIN_NAME || true
+            $ASADMIN stop-database || true 
+        
+            mvn clean test -U -Ppayara-micro-managed -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE8-Samples/pom.xml
+            SAMPLES_EE8_MICRO_TEST_RESULT=$?
+            
+            # Start the remote domain again
+            $ASADMIN start-domain $DOMAIN_NAME
+            $ASADMIN start-database
+        fi
     else
 	    # Fail fast
-	    mvn clean test -U -Ppayara-remote,payara-embedded -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8-Samples/pom.xml
+	    mvn clean test -U -Ppayara-remote -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8-Samples/pom.xml
 	    SAMPLES_EE8_RESULT=$?
+	    
+	    # Run against Micro if selected
+        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+            # Shut down the remote domain to stop port clashes
+            $ASADMIN stop-domain $DOMAIN_NAME || true
+            $ASADMIN stop-database || true 
+        
+            mvn clean test -U -Ppayara-micro-managed -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8-Samples/pom.xml
+            SAMPLES_EE8_MICRO_TEST_RESULT=$?
+            
+            # Start the remote domain again
+            $ASADMIN start-domain $DOMAIN_NAME
+            $ASADMIN start-database
+        fi
     fi
 fi
 
@@ -477,7 +698,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
 fi
 
 # Run the embedded tests if selected
-if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
+if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
+    # Shut down the remote domain to stop port clashes
+    $ASADMIN stop-domain $DOMAIN_NAME || true
+    $ASADMIN stop-database || true  
+
     # Run the Cargo Tracker tests against embedded all
     echo ""
     echo "##############################"
@@ -498,6 +723,10 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
 	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
     fi
+
+    # Start remote domain and database back up
+    $ASADMIN start-domain $DOMAIN_NAME
+    $ASADMIN start-database
 fi
 
 # Run the GlassFish tests if selected
@@ -551,26 +780,396 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MOJARRA_TESTS" != "n" ]; then
     fi
 fi
 
+# Run the MP TCK tests if selected
+if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
+    if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS" != "n" ]; then 
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+        MP_CONFIG_TCK_TEST_RESULT=$?
+    
+        mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/payara-health-arquillian-extension/pom.xml -Dpayara.version=$PAYARA_VERSION
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+        MP_HEALTH_TCK_TEST_RESULT=$?
+    
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+        MP_FAULT_TOLERANCE_TCK_TEST_RESULT=$?
+        
+        # Required to pass Metrics TCK
+        export MP_METRICS_TAGS="tier=integration"
+        
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+        MP_METRICS_TCK_TEST_RESULT=$?
+        
+        # Cleanup environment variable
+        unset MP_METRICS_TAGS
+        
+        mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version=$PAYARA_VERSION
+        mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+        MP_JWT_AUTH_TCK_TEST_RESULT=$?
+        
+        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
+            # Shut down the remote domain to stop port clashes
+            $ASADMIN stop-domain $DOMAIN_NAME || true
+            $ASADMIN stop-database || true 
+            
+            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_CONFIG_TCK_TEST_MICRO_RESULT=$?
+        
+            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+            MP_HEALTH_TCK_TEST_MICRO_RESULT=$?
+        
+            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_FAULT_TOLERANCE_TCK_TEST_MICRO_RESULT=$?
+    
+            # Required to pass Metrics TCK
+            export MP_METRICS_TAGS="tier=integration"
+        
+            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_METRICS_TCK_TEST_MICRO_RESULT=$?
+        
+            # Cleanup environment variable
+            unset MP_METRICS_TAGS
+        
+            mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_JWT_AUTH_TCK_TEST_MICRO_RESULT=$?
+            
+            # Start remote domain and database back up
+            $ASADMIN start-domain $DOMAIN_NAME
+            $ASADMIN start-database
+        fi
+        
+        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_EMBEDDED" != "n" ]; then
+            # Shut down the remote domain to stop port clashes
+            $ASADMIN stop-domain $DOMAIN_NAME || true
+            $ASADMIN stop-database || true 
+
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_CONFIG_TCK_TEST_EMBEDDED_RESULT=$?
+        
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+            MP_HEALTH_TCK_TEST_EMBEDDED_RESULT=$?
+    
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_FAULT_TOLERANCE_TCK_TEST_EMBEDDED_RESULT=$?
+        
+            # Required to pass Metrics TCK
+            export MP_METRICS_TAGS="tier=integration"
+        
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_METRICS_TCK_TEST_EMBEDDED_RESULT=$?
+        
+            # Cleanup environment variable
+            unset MP_METRICS_TAGS
+        
+            mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_JWT_AUTH_TCK_TEST_EMBEDDED_RESULT=$?
+
+            # Start remote domain and database back up
+            $ASADMIN start-domain $DOMAIN_NAME
+            $ASADMIN start-database
+        fi
+    else
+        # Run the Config tests
+        if [ "$RUN_MP_CONFIG_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "###########################"
+            echo "# Running MP Config Tests #"
+            echo "###########################"
+            echo ""
+        
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_CONFIG_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_CONFIG_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "#################################"
+                echo "# Running MP Config Micro Tests #"
+                echo "#################################"
+                echo ""
+
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true 
+            
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        
+            if [ "$RUN_MP_CONFIG_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "####################################"
+                echo "# Running MP Config Embedded Tests #"
+                echo "####################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        fi
+            
+        # Run the Health tests
+        if [ "$RUN_MP_HEALTH_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "###########################"
+            echo "# Running MP Health Tests #"
+            echo "###########################"
+            echo ""
+        
+            mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/payara-health-arquillian-extension/pom.xml -Dpayara.version=$PAYARA_VERSION
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_HEALTH_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_HEALTH_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "#################################"
+                echo "# Running MP Health Micro Tests #"
+                echo "#################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_HEALTH_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        
+            if [ "$RUN_MP_HEALTH_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "####################################"
+                echo "# Running MP Health Embedded Tests #"
+                echo "####################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_HEALTH_TCK_EMBEDDED_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        fi
+        
+        # Run the Fault Tolerance tests
+        if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "####################################"
+            echo "# Running MP Fault Tolerance Tests #"
+            echo "####################################"
+            echo ""
+        
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_FAULT_TOLERANCE_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "##########################################"
+                echo "# Running MP Fault Tolerance Micro Tests #"
+                echo "##########################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        
+            if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "#############################################"
+                echo "# Running MP Fault Tolerance Embedded Tests #"
+                echo "#############################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        fi
+        
+        # Run the Metrics tests
+        if [ "$RUN_MP_METRICS_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "############################"
+            echo "# Running MP Metrics Tests #"
+            echo "############################"
+            echo ""
+        
+            # Required to pass Metrics TCK
+            export MP_METRICS_TAGS="tier=integration"
+            
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_METRICS_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_METRICS_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "##################################"
+                echo "# Running MP Metrics Micro Tests #"
+                echo "##################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_METRICS_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        
+            if [ "$RUN_MP_METRICS_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "#####################################"
+                echo "# Running MP Metrics Embedded Tests #"
+                echo "#####################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_METRICS_TCK_EMBEDDED_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+            
+            # Cleanup environment variable
+            unset MP_METRICS_TAGS
+        fi
+        
+        # Run the JWT Auth tests
+        if [ "$RUN_MP_JWT_AUTH_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "#############################"
+            echo "# Running MP JWT Auth Tests #"
+            echo "#############################"
+            echo ""
+        
+            mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version=$PAYARA_VERSION
+            mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+            MP_JWT_AUTH_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "###################################"
+                echo "# Running MP JWT Auth Micro Tests #"
+                echo "###################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        
+            if [ "$RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "######################################"
+                echo "# Running MP JWT Auth Embedded Tests #"
+                echo "######################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true
+
+                mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version=$PAYARA_VERSION
+                MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        fi
+    fi
+fi
+
 #################
 ### Clean up  ###
 #################
-# Just try to shut down everything, in case something has hung around
-$ASADMIN stop-instance instance1 || true
-$ASADMIN stop-instance instance2 || true
-$ASADMIN stop-instance RollingUpdatesInstance1 || true
-$ASADMIN stop-instance RollingUpdatesInstance2 || true
-$ASADMIN stop-cluster sessionCluster || true
-$ASADMIN stop-instance hz-member1 || true
-$ASADMIN stop-instance hz-member2 || true
+
 $ASADMIN stop-domain $DOMAIN_NAME || true
 $ASADMIN stop-database || true
-$ASADMIN -p 6048 stop-cluster test-cluster || true
-$ASADMIN stop-domain test-domain_asadmin || true
-$ASADMIN stop-database --dbport 1528 || true
+unset MICRO_JAR
+
+#####################
+### Print Results ###
+#####################
+echo PAYARA_PRIVATE_TEST_RESULT = $PAYARA_PRIVATE_TEST_RESULT
+echo SAMPLES_TEST_RESULT = $SAMPLES_TEST_RESULT
+echo SAMPLES_MICRO_TEST_RESULT = $SAMPLES_MICRO_TEST_RESULT
+echo SAMPLES_EE8_TEST_RESULT = $SAMPLES_EE8_TEST_RESULT
+echo SAMPLES_EE8_MICRO_TEST_RESULT = $SAMPLES_EE8_MICRO_TEST_RESULT
+echo CARGO_TRACKER_TEST_RESULT = $CARGO_TRACKER_TEST_RESULT
+echo GLASSFISH_TEST_RESULT = $GLASSFISH_TEST_RESULT
+echo MOJARRA_TEST_RESULT = $MOJARRA_TEST_RESULT
+echo STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT = $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT
+echo EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT = $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT
+echo EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT = $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT
+echo MP_CONFIG_TCK_TEST_RESULT = $MP_CONFIG_TCK_TEST_RESULT
+echo MP_CONFIG_TCK_EMBEDDED_TEST_RESULT = $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT
+echo MP_CONFIG_TCK_MICRO_TEST_RESULT = $MP_CONFIG_TCK_MICRO_TEST_RESULT
+echo MP_HEALTH_TCK_TEST_RESULT = $MP_HEALTH_TCK_TEST_RESULT
+echo MP_HEALTH_TCK_EMBEDDED_TEST_RESULT = $MP_HEALTH_TCK_EMBEDDED_TEST_RESULT
+echo MP_HEALTH_TCK_MICRO_TEST_RESULT = $MP_HEALTH_TCK_MICRO_TEST_RESULT
+echo MP_FAULT_TOLERANCE_TCK_TEST_RESULT = $MP_FAULT_TOLERANCE_TCK_TEST_RESULT
+echo MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT = $MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT
+echo MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT = $MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT
+echo MP_METRICS_TCK_TEST_RESULT = $MP_METRICS_TCK_TEST_RESULT
+echo MP_METRICS_TCK_EMBEDDED_TEST_RESULT = $MP_METRICS_TCK_EMBEDDED_TEST_RESULT
+echo MP_METRICS_TCK_MICRO_TEST_RESULT = $MP_METRICS_TCK_MICRO_TEST_RESULT
+echo MP_JWT_AUTH_TCK_TEST_RESULT = $MP_JWT_AUTH_TCK_TEST_RESULT
+echo MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT = $MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT
+echo MP_JWT_AUTH_TCK_MICRO_TEST_RESULT = $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT
 
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_MICRO_TEST_RESULT -ne 0 ]; then
+    echo "Exiting with exit code 1"
     exit 1
 fi

@@ -554,7 +554,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 $ASADMIN stop-domain $DOMAIN_NAME || true
                 $ASADMIN stop-database || true 
             
-                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
+                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version=$PAYARA_VERSION -Dpayara.micro.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
@@ -572,7 +572,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 $ASADMIN stop-domain $DOMAIN_NAME || true
                 $ASADMIN stop-database || true 
             
-                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
+                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version=$PAYARA_VERSION -Dpayara.micro.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
@@ -600,7 +600,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 $ASADMIN stop-domain $DOMAIN_NAME || true
                 $ASADMIN stop-database || true 
             
-                mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
+                mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version=$PAYARA_VERSION -Dpayara.micro.version=$PAYARA_VERSION -fae -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
@@ -618,7 +618,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 $ASADMIN stop-domain $DOMAIN_NAME || true
                 $ASADMIN stop-database || true 
             
-                mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
+                mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version=$PAYARA_VERSION -Dpayara.micro.version=$PAYARA_VERSION -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
@@ -649,7 +649,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
             $ASADMIN stop-domain $DOMAIN_NAME || true
             $ASADMIN stop-database || true 
         
-            mvn clean test -U -Ppayara-micro-managed -Dpayara.version=$PAYARA_VERSION -fae -f Public/JavaEE8-Samples/pom.xml
+            mvn clean test -U -Ppayara-micro-managed -Dpayara.version=$PAYARA_VERSION -Dpayara.micro.version=$PAYARA_VERSION -fae -f Public/JavaEE8-Samples/pom.xml
             SAMPLES_EE8_MICRO_TEST_RESULT=$?
             
             # Start the remote domain again
@@ -667,7 +667,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
             $ASADMIN stop-domain $DOMAIN_NAME || true
             $ASADMIN stop-database || true 
         
-            mvn clean test -U -Ppayara-micro-managed -Dpayara.version=$PAYARA_VERSION -f Public/JavaEE8-Samples/pom.xml
+            mvn clean test -U -Ppayara-micro-managed -Dpayara.version=$PAYARA_VERSION -Dpayara.micro.version=$PAYARA_VERSION -f Public/JavaEE8-Samples/pom.xml
             SAMPLES_EE8_MICRO_TEST_RESULT=$?
             
             # Start the remote domain again
@@ -712,15 +712,15 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
     # Check if we should fail at end or not
     if [ "$FAIL_AT_END" != "n" ]; then
 	    # Fail at end
-	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
     else
 	    # Fail fast
-	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+	    mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
 	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
     fi
 

@@ -487,16 +487,30 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
     # Check if we should fail at end or not
     if [ "$FAIL_AT_END" != "n" ]; then
 	    # Fail at end
-	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-	    EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
-    else
-	    # Fail fast
-	    mvn clean test -Pembedded-all -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+        if [[ $PAYARA_VERSION = "5"* ]]; then
+            mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-	    mvn clean test -Pembedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        else
+            mvn clean test -Ppayara-embedded,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        fi
+    else
+        # Fail fast
+        if [[ $PAYARA_VERSION = "5"* ]]; then
+            mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -ff -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -ff -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        else
+            mvn clean test -Ppayara-embedded,payara4 -Dpayara.version=$PAYARA_VERSION -U -ff -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web,payara4 -Dpayara.version=$PAYARA_VERSION -U -ff -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        fi
     fi
 fi
 

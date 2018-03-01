@@ -98,7 +98,7 @@ else
         read -p "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
         
         # If we do want to run the Java EE 8 Samples tests...
-        if [ "$RUN_SAMPLES_TESTS" != "n" ]; then
+        if [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
             # Check if we want to run the samples against Payara Micro
             read -p "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
         fi
@@ -199,10 +199,8 @@ fi
 if [ "$RUN_FROM_SOURCE" != "n" ]; then
     # Set the Payara Server and Micro locations
     if [ "$TEST_PAYARA_5" != "y" ]; then
-	echo "Using payara41"
        PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara41
     else
-	echo "Using payara5"
 	PAYARA_HOME=$PAYARA_SOURCE/appserver/distributions/payara/target/stage/payara5    
     fi
     MICRO_JAR=$PAYARA_SOURCE/appserver/extras/payara-micro/payara-micro-distribution/target/payara-micro.jar
@@ -705,23 +703,41 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
 
     # Run the Cargo Tracker tests against embedded all
     echo ""
-    echo "##############################"
-    echo "# Running Embedded All Tests #"
-    echo "##############################"
+    echo "#######################################"
+    echo "# Running CargoTracker Embedded Tests #"
+    echo "#######################################"
     echo ""
     # Check if we should fail at end or not
     if [ "$FAIL_AT_END" != "n" ]; then
-	    # Fail at end
-	    mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-	    EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-	    mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
-    else
-	    # Fail fast
-	    mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+        # Check if we're running against 5 or not
+        if [ "$TEST_PAYARA_5" = "y" ]; then
+            # Fail at end
+            mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-	    mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-	    EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        else
+            # Fail at end
+            mvn clean test -Ppayara-embedded,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        fi
+    else
+        # Check if we're running against 5 or not
+        if [ "$TEST_PAYARA_5" = "y" ]; then
+            # Fail fast
+            mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -ff -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        else
+            # Fail fast
+            mvn clean test -Ppayara-embedded,payara4 -Dpayara.version=$PAYARA_VERSION -U -ff -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
+            mvn clean test -Ppayara-embedded-web,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
+            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
+        fi
     fi
 
     # Start remote domain and database back up
@@ -1140,16 +1156,16 @@ unset MICRO_JAR
 ### Print Results ###
 #####################
 echo PAYARA_PRIVATE_TEST_RESULT = $PAYARA_PRIVATE_TEST_RESULT
+echo STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT = $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT
 echo SAMPLES_TEST_RESULT = $SAMPLES_TEST_RESULT
 echo SAMPLES_MICRO_TEST_RESULT = $SAMPLES_MICRO_TEST_RESULT
 echo SAMPLES_EE8_TEST_RESULT = $SAMPLES_EE8_TEST_RESULT
 echo SAMPLES_EE8_MICRO_TEST_RESULT = $SAMPLES_EE8_MICRO_TEST_RESULT
 echo CARGO_TRACKER_TEST_RESULT = $CARGO_TRACKER_TEST_RESULT
-echo GLASSFISH_TEST_RESULT = $GLASSFISH_TEST_RESULT
-echo MOJARRA_TEST_RESULT = $MOJARRA_TEST_RESULT
-echo STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT = $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT
 echo EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT = $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT
 echo EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT = $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT
+echo GLASSFISH_TEST_RESULT = $GLASSFISH_TEST_RESULT
+echo MOJARRA_TEST_RESULT = $MOJARRA_TEST_RESULT
 echo MP_CONFIG_TCK_TEST_RESULT = $MP_CONFIG_TCK_TEST_RESULT
 echo MP_CONFIG_TCK_EMBEDDED_TEST_RESULT = $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT
 echo MP_CONFIG_TCK_MICRO_TEST_RESULT = $MP_CONFIG_TCK_MICRO_TEST_RESULT

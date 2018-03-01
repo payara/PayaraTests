@@ -544,6 +544,9 @@ $ASADMIN -p 6048 stop-cluster test-cluster || true
 $ASADMIN stop-domain test-domain_asadmin || true
 $ASADMIN stop-database --dbport 1528 || true
 
+#######################
+### Embedded tests  ###
+#######################
 # Run the embedded tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_TESTS" != "n" ]; then
     # Run the Cargo Tracker tests against embedded all

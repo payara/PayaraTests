@@ -418,7 +418,6 @@ GLASSFISH_TEST_RESULT=0
 MOJARRA_TEST_RESULT=0
 STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT=0
 EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=0
-EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=0
 MP_CONFIG_TCK_TEST_RESULT=0
 MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=0
 MP_CONFIG_TCK_MICRO_TEST_RESULT=0
@@ -714,14 +713,10 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
             # Fail at end
             mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-            mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
         else
             # Fail at end
             mvn clean test -Ppayara-embedded,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-            mvn clean test -Ppayara-embedded-web,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
         fi
     else
         # Check if we're running against 5 or not
@@ -729,14 +724,10 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
             # Fail fast
             mvn clean test -Ppayara-embedded -Dpayara.version=$PAYARA_VERSION -U -ff -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-            mvn clean test -Ppayara-embedded-web -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
         else
             # Fail fast
             mvn clean test -Ppayara-embedded,payara4 -Dpayara.version=$PAYARA_VERSION -U -ff -fae -f Public/CargoTracker/pom.xml
             EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT=$?
-            mvn clean test -Ppayara-embedded-web,payara4 -Dpayara.version=$PAYARA_VERSION -U -fae -f Public/CargoTracker/pom.xml
-            EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT=$?
         fi
     fi
 
@@ -1163,7 +1154,6 @@ echo SAMPLES_EE8_TEST_RESULT = $SAMPLES_EE8_TEST_RESULT
 echo SAMPLES_EE8_MICRO_TEST_RESULT = $SAMPLES_EE8_MICRO_TEST_RESULT
 echo CARGO_TRACKER_TEST_RESULT = $CARGO_TRACKER_TEST_RESULT
 echo EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT = $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT
-echo EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT = $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT
 echo GLASSFISH_TEST_RESULT = $GLASSFISH_TEST_RESULT
 echo MOJARRA_TEST_RESULT = $MOJARRA_TEST_RESULT
 echo MP_CONFIG_TCK_TEST_RESULT = $MP_CONFIG_TCK_TEST_RESULT
@@ -1185,7 +1175,7 @@ echo MP_JWT_AUTH_TCK_MICRO_TEST_RESULT = $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $EMBEDDED_WEB_CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_MICRO_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ]  || [ $MP_CONFIG_TCK_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_MICRO_TEST_RESULT -ne 0 ]; then
     echo "Exiting with exit code 1"
     exit 1
 fi

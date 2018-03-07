@@ -94,6 +94,8 @@ else
             if [ "$TEST_PAYARA_5" = "y" ]; then
                 # Check if we want to run the samples against Payara Micro
                 read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_SAMPLES_TESTS_MICRO
+            else 
+                RUN_SAMPLES_TESTS_MICRO="n"
             fi
         fi
 
@@ -105,6 +107,9 @@ else
                 # Check if we want to run the samples against Payara Micro
                 read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
             fi
+        else
+            RUN_EE8_SAMPLES_TESTS="n"
+            RUN_EE8_SAMPLES_TESTS_MICRO="n"
         fi
 
         # Check if we want to run the Cargo Tracker tests
@@ -140,6 +145,8 @@ else
                 if [ "$TEST_PAYARA_5" = "y" ]; then
                     # Check if we want to run them all against Micro as well
                     read -rp "Do you also want to run all of the TCKs against Payara Micro? (y/n) [y] " RUN_ALL_MP_TCK_TESTS_MICRO
+                else
+                    RUN_ALL_MP_TCK_TESTS_MICRO="n"
                 fi
 
                 # Check if we want to run them all against Embedded as well
@@ -150,6 +157,8 @@ else
                 if [ "$RUN_MP_CONFIG_TCK_TESTS" != "n" ]; then
                     if [ "$TEST_PAYARA_5" = "y" ]; then
                         read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_CONFIG_TCK_TESTS_MICRO="n"
                     fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_EMBEDDED
                 fi
@@ -159,6 +168,8 @@ else
                 if [ "$RUN_MP_HEALTH_TCK_TESTS" != "n" ]; then
                     if [ "$TEST_PAYARA_5" = "y" ]; then
                         read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_HEALTH_TCK_TESTS_MICRO="n"
                     fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_EMBEDDED
                 fi
@@ -168,6 +179,8 @@ else
                 if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS" != "n" ]; then
                     if [ "$TEST_PAYARA_5" = "y" ]; then
                         read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO="n"
                     fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED
                 fi
@@ -177,6 +190,8 @@ else
                 if [ "$RUN_MP_METRICS_TCK_TESTS" != "n" ]; then
                     if [ "$TEST_PAYARA_5" = "y" ]; then
                         read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_METRICS_TCK_TESTS_MICRO="n"
                     fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_EMBEDDED
                 fi
@@ -186,6 +201,8 @@ else
                 if [ "$RUN_MP_JWT_AUTH_TCK_TESTS" != "n" ]; then
                     if [ "$TEST_PAYARA_5" = "y" ]; then
                         read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_JWT_AUTH_TCK_TESTS_MICRO="n"
                     fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED
                 fi

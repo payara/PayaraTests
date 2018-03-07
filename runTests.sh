@@ -844,7 +844,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             MP_JWT_AUTH_TCK_TEST_RESULT=$?
         fi
         
-        if [ "$TEST_PAYARA_5" != "y" ]; then
+        if [ "$TEST_PAYARA_5" = "y" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true

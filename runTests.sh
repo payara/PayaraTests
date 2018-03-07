@@ -91,16 +91,20 @@ else
             # Check if we want to only run the stable tests
             read -rp "Do you only want to run the stable tests? (y/n) [y] " STABLE_SAMPLES_ONLY
             
-            # Check if we want to run the samples against Payara Micro
-            read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_SAMPLES_TESTS_MICRO
+            if [ "$TEST_PAYARA_5" = "y" ]; then
+                # Check if we want to run the samples against Payara Micro
+                read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_SAMPLES_TESTS_MICRO
+            fi
         fi
 
-        read -rp "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
+        if [ "$TEST_PAYARA_5" = "y" ]; then
+            read -rp "Do you want to run the Java EE 8 Samples tests? (y/n) [y] " RUN_EE8_SAMPLES_TESTS
         
-        # If we do want to run the Java EE 8 Samples tests...
-        if [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
-            # Check if we want to run the samples against Payara Micro
-            read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
+            # If we do want to run the Java EE 8 Samples tests...
+            if [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
+                # Check if we want to run the samples against Payara Micro
+                read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
+            fi
         fi
 
         # Check if we want to run the Cargo Tracker tests
@@ -133,8 +137,10 @@ else
             # If we do want to run all of the TCKs...
             if [ "$RUN_ALL_MP_TCK_TESTS" != "n" ]; then
                 
-                # Check if we want to run them all against Micro as well
-                read -rp "Do you also want to run all of the TCKs against Payara Micro? (y/n) [y] " RUN_ALL_MP_TCK_TESTS_MICRO
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    # Check if we want to run them all against Micro as well
+                    read -rp "Do you also want to run all of the TCKs against Payara Micro? (y/n) [y] " RUN_ALL_MP_TCK_TESTS_MICRO
+                fi
 
                 # Check if we want to run them all against Embedded as well
                 read -rp "Do you also want to run all of the TCKs against Payara Embedded? (y/n) [y] " RUN_ALL_MP_TCK_TESTS_EMBEDDED
@@ -142,36 +148,46 @@ else
                 read -rp "Do you want to run the Config TCK? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS
                     
                 if [ "$RUN_MP_CONFIG_TCK_TESTS" != "n" ]; then
-                    read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_MICRO
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_MICRO
+                    fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_CONFIG_TCK_TESTS_EMBEDDED
                 fi
                     
                 read -rp "Do you want to run the Health TCK? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS
                     
                 if [ "$RUN_MP_HEALTH_TCK_TESTS" != "n" ]; then
-                    read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_MICRO
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_MICRO
+                    fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_HEALTH_TCK_TESTS_EMBEDDED
                 fi
                     
                 read -rp "Do you want to run the Fault Tolerance TCK? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS
                     
                 if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS" != "n" ]; then
-                    read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO
+                    fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED
                 fi
                     
                 read -rp "Do you want to run the Metrics TCK? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS
                     
                 if [ "$RUN_MP_METRICS_TCK_TESTS" != "n" ]; then
-                    read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_MICRO
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_MICRO
+                    fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_METRICS_TCK_TESTS_EMBEDDED
                 fi
                     
                 read -rp "Do you want to run the JWT Auth TCK? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS
                     
                 if [ "$RUN_MP_JWT_AUTH_TCK_TESTS" != "n" ]; then
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
                         read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_MICRO
-                        read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED
+                    fi
+                    read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED
                 fi
             fi
         fi
@@ -435,15 +451,25 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             # Check if we should fail at end or not
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
-                mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
-                PAYARA_PRIVATE_TEST_RESULT=$?
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                else
+                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                fi
             else
                 # Fail fast
-                mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
-                PAYARA_PRIVATE_TEST_RESULT=$?
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                else
+                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                fi
             fi
         else
-            # Run the private tests with the stable profile (default)
+            # Run the private tests with the stable profile
             echo ""
             echo "#######################################"
             echo "# Running Stable Private Payara Tests #"
@@ -452,12 +478,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             # Check if we should fail at end or not
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
-                mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
-                PAYARA_PRIVATE_TEST_RESULT=$?
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                else
+                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                fi
             else
                 # Fail fast
-                mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
-                PAYARA_PRIVATE_TEST_RESULT=$?
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                else
+                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    PAYARA_PRIVATE_TEST_RESULT=$?
+                fi
             fi
         fi
     # If we've selected to run all of the private Payara tests...
@@ -471,12 +507,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
         # Check if we should fail at end or not
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
-            mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
-            PAYARA_PRIVATE_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" = "y" ]; then
+                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
+                PAYARA_PRIVATE_TEST_RESULT=$?
+            else
+                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                PAYARA_PRIVATE_TEST_RESULT=$?
+            fi
         else
             # Fail fast
-            mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
-            PAYARA_PRIVATE_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" = "y" ]; then
+                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
+                PAYARA_PRIVATE_TEST_RESULT=$?
+            else
+                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                PAYARA_PRIVATE_TEST_RESULT=$?
+            fi
         fi
     fi
 
@@ -789,33 +835,42 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
         MP_METRICS_TCK_TEST_RESULT=$?
         
         mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
-        mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-        MP_JWT_AUTH_TCK_TEST_RESULT=$?
         
-        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
-            # Shut down the remote domain to stop port clashes
-            $ASADMIN stop-domain $DOMAIN_NAME || true
-            $ASADMIN stop-database || true 
-            
-            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
-        
-            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
-            MP_HEALTH_TCK_MICRO_TEST_RESULT=$?
-        
-            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=$?
-        
-            mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
-            MP_METRICS_TCK_MICRO_TEST_RESULT=$?
-        
-            mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
-            
-            # Start remote domain and database back up
-            $ASADMIN start-domain $DOMAIN_NAME
-            $ASADMIN start-database
+        if [ "$TEST_PAYARA_5" != "y" ]; then
+            mvn clean test -Pfull,payara-server-4-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            MP_JWT_AUTH_TCK_TEST_RESULT=$?
+        else
+            mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            MP_JWT_AUTH_TCK_TEST_RESULT=$?
         fi
+        
+        if [ "$TEST_PAYARA_5" != "y" ]; then
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                $ASADMIN stop-database || true 
+            
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
+        
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+                MP_HEALTH_TCK_MICRO_TEST_RESULT=$?
+        
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=$?
+        
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                MP_METRICS_TCK_MICRO_TEST_RESULT=$?
+        
+                mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
+            
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                $ASADMIN start-database
+            fi
+        fi
+        
         
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_EMBEDDED" != "n" ]; then
             # Shut down the remote domain to stop port clashes
@@ -834,8 +889,13 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
             MP_METRICS_TCK_EMBEDDED_TEST_RESULT=$?
         
-            mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" != "y" ]; then
+                mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+            else
+                mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+            fi
 
             # Start remote domain and database back up
             $ASADMIN start-domain $DOMAIN_NAME
@@ -1052,8 +1112,15 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             echo ""
         
             mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            MP_JWT_AUTH_TCK_TEST_RESULT=$?
+        
+            if [ "$TEST_PAYARA_5" != "y" ]; then
+                mvn clean test -Pfull,payara-server-4-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_JWT_AUTH_TCK_TEST_RESULT=$?
+            else
+                mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_JWT_AUTH_TCK_TEST_RESULT=$?
+            fi
+            
         
             if [ "$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO" != "n" ]; then
                 echo ""
@@ -1085,8 +1152,14 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 $ASADMIN stop-domain $DOMAIN_NAME || true
                 $ASADMIN stop-database || true
 
-                mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
-                MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+                if [ "$TEST_PAYARA_5" != "y" ]; then
+                    mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                    MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+                else
+                    mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                    MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
+                fi
+                
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
@@ -1123,16 +1196,12 @@ fi
 if [ ! -z "$SAMPLES_TEST_RESULT" ]; then
     echo SAMPLES_TEST_RESULT = $SAMPLES_TEST_RESULT
 else
-    echo "Samples Test result apparently doesn't exist"
-    echo Samples test result = $SAMPLES_TEST_RESULT
     SAMPLES_TEST_RESULT=0
 fi
 
 if [ ! -z "$SAMPLES_MICRO_TEST_RESULT" ]; then
     echo SAMPLES_MICRO_TEST_RESULT = $SAMPLES_MICRO_TEST_RESULT
 else
-    echo "Samples Micro Test result apparently doesn't exist"
-    echo Samples Micro test result = $SAMPLES_MICRO_TEST_RESULT
     SAMPLES_MICRO_TEST_RESULT=0
 fi
 

@@ -469,19 +469,19 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
                 if [ "$TEST_PAYARA_5" = "y" ]; then
-                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
+                    mvn clean test -U -Ppayara-server-5-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 else
-                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    mvn clean test -U -Ppayara-server-4-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 fi
             else
                 # Fail fast
                 if [ "$TEST_PAYARA_5" = "y" ]; then
-                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
+                    mvn clean test -U -Ppayara-server-5-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 else
-                    mvn clean test -U -Ppayara-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    mvn clean test -U -Ppayara-server-4-remote,quick-stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 fi
             fi
@@ -496,19 +496,19 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
             if [ "$FAIL_AT_END" != "n" ]; then
                 # Fail at end
                 if [ "$TEST_PAYARA_5" = "y" ]; then
-                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
+                    mvn clean test -U -Ppayara-server-5-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 else
-                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    mvn clean test -U -Ppayara-server-4-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 fi
             else
                 # Fail fast
                 if [ "$TEST_PAYARA_5" = "y" ]; then
-                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
+                    mvn clean test -U -Ppayara-server-5-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 else
-                    mvn clean test -U -Ppayara-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                    mvn clean test -U -Ppayara-server-4-remote,stable-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
                     PAYARA_PRIVATE_TEST_RESULT=$?
                 fi
             fi
@@ -525,19 +525,19 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
             if [ "$TEST_PAYARA_5" = "y" ]; then
-                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
+                mvn clean test -U -Ppayara-server-5-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
                 PAYARA_PRIVATE_TEST_RESULT=$?
             else
-                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                mvn clean test -U -Ppayara-server-4-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -fae -f Private/PayaraTests-Private/pom.xml
                 PAYARA_PRIVATE_TEST_RESULT=$?
             fi
         else
             # Fail fast
             if [ "$TEST_PAYARA_5" = "y" ]; then
-                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
+                mvn clean test -U -Ppayara-server-5-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
                 PAYARA_PRIVATE_TEST_RESULT=$?
             else
-                mvn clean test -U -Ppayara-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml -DskipClusteredSingleton="true"
+                mvn clean test -U -Ppayara-server-4-remote,all-tests -Dpayara.version="$PAYARA_VERSION" -Dpayara.home="$PAYARA_HOME" -Dmicro.jar="$MICRO_JAR" -f Private/PayaraTests-Private/pom.xml
                 PAYARA_PRIVATE_TEST_RESULT=$?
             fi
         fi

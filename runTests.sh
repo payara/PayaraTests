@@ -247,14 +247,14 @@ $ASADMIN stop-instance hz-member2 || true
 $ASADMIN delete-instance hz-member2 || true
 $ASADMIN stop-domain $DOMAIN_NAME || true
 $ASADMIN delete-domain $DOMAIN_NAME || true
-$ASADMIN stop-database --dbtype derby || true
+$ASADMIN stop-database || true
 $ASADMIN -p 6048 stop-cluster test-cluster || true
 $ASADMIN -p 6048 delete-instance test-instance-1 || true
 $ASADMIN -p 6048 delete-instance test-instance-2 || true
 $ASADMIN -p 6048 delete-cluster test-cluster || true
 $ASADMIN stop-domain test-domain_asadmin || true
 $ASADMIN delete-domain test-domain_asadmin || true
-$ASADMIN stop-database --dbtype derby --dbport 1528 || true
+$ASADMIN stop-database --dbport 1528 || true
 
 echo ""
 echo ""
@@ -293,7 +293,7 @@ $ASADMIN set-hazelcast-configuration --clusterName=$HZCLUSTER --enabled true --d
 $ASADMIN set resources.managed-scheduled-executor-service.concurrent/__defaultManagedScheduledExecutorService.core-pool-size=5
 
 # Start Derby Database
-$ASADMIN start-database --dbtype derby
+$ASADMIN start-database
 
 # Create Servlet Tests user
 SERVLET_TEST_PASSWORD_FILE=$PAYARA_HOME/servlet-passwords.txt
@@ -563,10 +563,10 @@ $ASADMIN stop-cluster sessionCluster || true
 $ASADMIN stop-instance hz-member1 || true
 $ASADMIN stop-instance hz-member2 || true
 $ASADMIN stop-domain $DOMAIN_NAME || true
-$ASADMIN stop-database --dbtype derby || true
+$ASADMIN stop-database || true
 $ASADMIN -p 6048 stop-cluster test-cluster || true
 $ASADMIN stop-domain test-domain_asadmin || true
-$ASADMIN stop-database --dbtype derby --dbport 1528 || true
+$ASADMIN stop-database --dbport 1528 || true
 
 ##########################
 ### Check for Failures ###

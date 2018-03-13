@@ -273,6 +273,12 @@ if [ "$TEST_PAYARA_5" = "y" ]; then
     if [ ! -z "$update_version" ]; then
         PAYARA_VERSION=$PAYARA_VERSION.$update_version
     fi
+    
+    if [ "$minor_version" != "181" ]; then
+        PAYARA_VERSION_GREATER_THAN_5_181="y"
+    else
+        PAYARA_VERSION_GREATER_THAN_5_181="n"
+    fi
 else
     PAYARA_VERSION=$major_version.$minor_version.$update_version.$payara_version
 fi
@@ -330,6 +336,7 @@ if [ $INTERACTIVE ]; then
         echo "RUN_MP_JWT_AUTH_TCK_TESTS_MICRO=$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO"
         echo "RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED=$RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED"
         echo "TEST_PAYARA_5=$TEST_PAYARA_5"
+        echo "PAYARA_VERSION_GREATER_THAN_5_181=$PAYARA_VERSION_GREATER_THAN_5_181"
         echo ""
         echo "PAYARA_HOME=$PAYARA_HOME"
         echo "MICRO_JAR=$MICRO_JAR"
@@ -378,14 +385,25 @@ $ASADMIN stop-instance hz-member2 || true
 $ASADMIN delete-instance hz-member2 || true
 $ASADMIN stop-domain $DOMAIN_NAME || true
 $ASADMIN delete-domain $DOMAIN_NAME || true
-$ASADMIN stop-database || true
+
+if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    $ASADMIN stop-database --dbtype derby || true
+else
+    $ASADMIN stop-database || true
+fi
+
 $ASADMIN -p 6048 stop-cluster test-cluster || true
 $ASADMIN -p 6048 delete-instance test-instance-1 || true
 $ASADMIN -p 6048 delete-instance test-instance-2 || true
 $ASADMIN -p 6048 delete-cluster test-cluster || true
 $ASADMIN stop-domain test-domain_asadmin || true
 $ASADMIN delete-domain test-domain_asadmin || true
-$ASADMIN stop-database --dbport 1528 || true
+
+if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    $ASADMIN stop-database --dbtype derby --dbport 1528 || true
+else
+    $ASADMIN stop-database --dbport 1528 || true
+fi
 
 echo ""
 echo ""
@@ -432,7 +450,11 @@ $ASADMIN set-hazelcast-configuration --clusterName=$HZCLUSTER --enabled true --d
 $ASADMIN set resources.managed-scheduled-executor-service.concurrent/__defaultManagedScheduledExecutorService.core-pool-size=5
 
 # Start Derby Database
-$ASADMIN start-database
+if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    $ASADMIN start-database --dbtype derby || true
+else
+    $ASADMIN start-database || true
+fi 
 
 # Create Servlet Tests user
 SERVLET_TEST_PASSWORD_FILE=$PAYARA_HOME/servlet-passwords.txt
@@ -564,7 +586,13 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
     $ASADMIN stop-cluster sessionCluster || true
     $ASADMIN stop-instance hz-member1 || true
     $ASADMIN stop-instance hz-member2 || true
-    $ASADMIN stop-database --dbport 1528 || true
+    
+    if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+        $ASADMIN stop-database --dbtype derby --dbport 1528 || true
+    else
+        $ASADMIN stop-database --dbport 1528 || true
+    fi
+
     $ASADMIN -p 6048 stop-cluster test-cluster || true
     $ASADMIN stop-domain test-domain_asadmin || true
     $ASADMIN delete-instance instance1 || true
@@ -590,39 +618,66 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
         # Check if we should fail at end or not
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
-            mvn clean test -U -Ppayara-remote,stable -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
-            SAMPLES_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" != "y" ]; then
+                mvn clean test -U -Ppayara-server-4-remote,stable -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            else
+                mvn clean test -U -Ppayara-server-5-remote,stable -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            fi
             
             # Run against Micro if selected
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true 
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi
             
                 mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                # Start Derby Database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         else
             # Fail fast
-            mvn clean test -U -Ppayara-remote,stable -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
-            SAMPLES_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" != "y" ]; then
+                mvn clean test -U -Ppayara-server-4-remote,stable -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            else
+                mvn clean test -U -Ppayara-server-5-remote,stable -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            fi
             
             # Run against Micro if selected
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true 
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi
             
                 mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
     # If we've selected to run all of the tests...
@@ -636,39 +691,65 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
         # Check if we should fail at end or not
         if [ "$FAIL_AT_END" != "n" ]; then
             # Fail at end
-            mvn clean test -U -Ppayara-remote,all -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
-            SAMPLES_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" != "y" ]; then
+                mvn clean test -U -Ppayara-server-4-remote,all -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            else
+                mvn clean test -U -Ppayara-server-5-remote,all -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            fi
             
             # Run against Micro if selected
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true 
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi
             
                 mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -fae -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         else
             # Fail fast
-            mvn clean test -U -Ppayara-remote,all -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
-            SAMPLES_TEST_RESULT=$?
+            if [ "$TEST_PAYARA_5" != "y" ]; then
+                mvn clean test -U -Ppayara-server-4-remote,all -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            else
+                mvn clean test -U -Ppayara-server-5-remote,all -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
+                SAMPLES_TEST_RESULT=$?
+            fi
             
             # Run against Micro if selected
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true 
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi
             
                 mvn clean test -U -Ppayara-micro-managed,all -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -f Public/JavaEE7-Samples/pom.xml
                 SAMPLES_MICRO_TEST_RESULT=$?
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
     fi
@@ -692,14 +773,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
             # Shut down the remote domain to stop port clashes
             $ASADMIN stop-domain $DOMAIN_NAME || true
-            $ASADMIN stop-database || true 
+            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                $ASADMIN stop-database --dbtype derby || true
+            else
+                $ASADMIN stop-database || true
+            fi
         
             mvn clean test -U -Ppayara-micro-managed -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
             SAMPLES_EE8_MICRO_TEST_RESULT=$?
             
             # Start the remote domain again
             $ASADMIN start-domain $DOMAIN_NAME
-            $ASADMIN start-database
+            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                $ASADMIN start-database --dbtype derby || true
+            else
+                $ASADMIN start-database || true
+            fi 
         fi
     else
 	    # Fail fast
@@ -710,14 +799,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
             # Shut down the remote domain to stop port clashes
             $ASADMIN stop-domain $DOMAIN_NAME || true
-            $ASADMIN stop-database || true 
+            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                $ASADMIN stop-database --dbtype derby || true
+            else
+                $ASADMIN stop-database || true
+            fi 
         
             mvn clean test -U -Ppayara-micro-managed -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
             SAMPLES_EE8_MICRO_TEST_RESULT=$?
             
             # Start the remote domain again
             $ASADMIN start-domain $DOMAIN_NAME
-            $ASADMIN start-database
+            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                $ASADMIN start-database --dbtype derby || true
+            else
+                $ASADMIN start-database || true
+            fi 
         fi
     fi
 fi
@@ -733,12 +830,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_CARGO_TRACKER_TESTS" != "n" ]; then
     # Check if we should fail at end or not
     if [ "$FAIL_AT_END" != "n" ]; then
         # Fail at end
-        mvn clean test -U -fae -f Public/CargoTracker/pom.xml
-        CARGO_TRACKER_TEST_RESULT=$?
+        if [ "$TEST_PAYARA_5" = "y" ]; then
+            mvn clean test -U -fae -f Public/CargoTracker/pom.xml -Ppayara-server-remote
+            CARGO_TRACKER_TEST_RESULT=$?
+        else
+            mvn clean test -U -fae -f Public/CargoTracker/pom.xml -Ppayara-server-remote,payara4
+            CARGO_TRACKER_TEST_RESULT=$?
+        fi
     else
         # Fail fast
-        mvn clean test -U -f Public/CargoTracker/pom.xml
-        CARGO_TRACKER_TEST_RESULT=$?
+        if [ "$TEST_PAYARA_5" = "y" ]; then
+            mvn clean test -U -f Public/CargoTracker/pom.xml -Ppayara-server-remote
+            CARGO_TRACKER_TEST_RESULT=$?
+        else
+            mvn clean test -U -f Public/CargoTracker/pom.xml -Ppayara-server-remote,payara4
+            CARGO_TRACKER_TEST_RESULT=$?
+        fi
     fi
 fi
 
@@ -746,7 +853,11 @@ fi
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
     # Shut down the remote domain to stop port clashes
     $ASADMIN stop-domain $DOMAIN_NAME || true
-    $ASADMIN stop-database || true  
+    if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+        $ASADMIN stop-database --dbtype derby || true
+    else
+        $ASADMIN stop-database || true
+    fi   
 
     # Run the Cargo Tracker tests against embedded all
     echo ""
@@ -781,7 +892,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
 
     # Start remote domain and database back up
     $ASADMIN start-domain $DOMAIN_NAME
-    $ASADMIN start-database
+    if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+        $ASADMIN start-database --dbtype derby || true
+    else
+        $ASADMIN start-database || true
+    fi 
 fi
 
 # Run the GlassFish tests if selected
@@ -865,7 +980,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true 
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
             
                 mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
@@ -884,7 +1003,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
         
@@ -892,7 +1015,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_EMBEDDED" != "n" ]; then
             # Shut down the remote domain to stop port clashes
             $ASADMIN stop-domain $DOMAIN_NAME || true
-            $ASADMIN stop-database || true 
+            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                $ASADMIN stop-database --dbtype derby || true
+            else
+                $ASADMIN stop-database || true
+            fi 
 
             mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=$?
@@ -916,7 +1043,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
             # Start remote domain and database back up
             $ASADMIN start-domain $DOMAIN_NAME
-            $ASADMIN start-database
+            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                $ASADMIN start-database --dbtype derby || true
+            else
+                $ASADMIN start-database || true
+            fi 
         fi
     else
         # Run the Config tests
@@ -939,14 +1070,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true 
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
             
                 mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         
             if [ "$RUN_MP_CONFIG_TCK_TESTS_EMBEDDED" != "n" ]; then
@@ -958,14 +1097,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
             
@@ -990,14 +1137,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_HEALTH_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         
             if [ "$RUN_MP_HEALTH_TCK_TESTS_EMBEDDED" != "n" ]; then
@@ -1009,14 +1164,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_HEALTH_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
         
@@ -1040,14 +1203,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         
             if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_EMBEDDED" != "n" ]; then
@@ -1059,14 +1230,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
         
@@ -1090,14 +1269,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
                 MP_METRICS_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         
             if [ "$RUN_MP_METRICS_TCK_TESTS_EMBEDDED" != "n" ]; then
@@ -1109,14 +1296,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
                 MP_METRICS_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
         
@@ -1148,14 +1343,22 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         
             if [ "$RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED" != "n" ]; then
@@ -1167,7 +1370,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                $ASADMIN stop-database || true
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
 
                 if [ "$TEST_PAYARA_5" != "y" ]; then
                     mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
@@ -1180,7 +1387,11 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                $ASADMIN start-database
+                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
             fi
         fi
     fi
@@ -1191,7 +1402,11 @@ fi
 #################
 
 $ASADMIN stop-domain $DOMAIN_NAME || true
-$ASADMIN stop-database || true
+if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    $ASADMIN stop-database --dbtype derby || true
+else
+    $ASADMIN stop-database || true
+fi 
 unset MICRO_JAR
 unset MP_METRICS_TAGS
 

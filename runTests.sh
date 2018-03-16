@@ -954,26 +954,26 @@ fi
 # Run the MP TCK tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
     if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS" != "n" ]; then 
-        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
         MP_CONFIG_TCK_TEST_RESULT=$?
     
-        mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/payara-health-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
-        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+        mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/payara-health-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/tck-runner/pom.xml
         MP_HEALTH_TCK_TEST_RESULT=$?
     
-        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Fault-Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
         MP_FAULT_TOLERANCE_TCK_TEST_RESULT=$?
         
-        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+        mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
         MP_METRICS_TCK_TEST_RESULT=$?
         
-        mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
+        mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
         
         if [ "$TEST_PAYARA_5" != "y" ]; then
-            mvn clean test -Pfull,payara-server-4-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Pfull,payara-server-4-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_JWT_AUTH_TCK_TEST_RESULT=$?
         else
-            mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_JWT_AUTH_TCK_TEST_RESULT=$?
         fi
         
@@ -987,19 +987,19 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
             
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
         
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/tck-runner/pom.xml
                 MP_HEALTH_TCK_MICRO_TEST_RESULT=$?
         
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Fault-Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=$?
         
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
                 MP_METRICS_TCK_MICRO_TEST_RESULT=$?
         
-                mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
             
                 # Start remote domain and database back up
@@ -1022,23 +1022,23 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 $ASADMIN stop-database || true
             fi 
 
-            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=$?
         
-            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/tck-runner/pom.xml
             MP_HEALTH_TCK_EMBEDDED_TEST_RESULT=$?
     
-            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Fault-Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT=$?
         
-            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
             MP_METRICS_TCK_EMBEDDED_TEST_RESULT=$?
         
             if [ "$TEST_PAYARA_5" != "y" ]; then
-                mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
             else
-                mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
             fi
 
@@ -1059,7 +1059,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             echo "###########################"
             echo ""
         
-            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_CONFIG_TCK_TEST_RESULT=$?
         
             if [ "$RUN_MP_CONFIG_TCK_TESTS_MICRO" != "n" ]; then
@@ -1077,7 +1077,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
             
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_CONFIG_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1104,7 +1104,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Config/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_CONFIG_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1125,8 +1125,8 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             echo "###########################"
             echo ""
         
-            mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/payara-health-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
-            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/payara-health-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_HEALTH_TCK_TEST_RESULT=$?
         
             if [ "$RUN_MP_HEALTH_TCK_TESTS_MICRO" != "n" ]; then
@@ -1144,7 +1144,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_HEALTH_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1171,7 +1171,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Health\ Check/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Health/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_HEALTH_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1192,7 +1192,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             echo "####################################"
             echo ""
         
-            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Fault-Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
             MP_FAULT_TOLERANCE_TCK_TEST_RESULT=$?
         
             if [ "$RUN_MP_FAULT_TOLERANCE_TCK_TESTS_MICRO" != "n" ]; then
@@ -1210,7 +1210,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Fault-Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1237,7 +1237,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Fault\ Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Fault-Tolerance/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1258,7 +1258,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             echo "############################"
             echo ""
             
-            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
             MP_METRICS_TCK_TEST_RESULT=$?
         
             if [ "$RUN_MP_METRICS_TCK_TESTS_MICRO" != "n" ]; then
@@ -1276,7 +1276,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
                 MP_METRICS_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1303,7 +1303,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Metrics/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
                 MP_METRICS_TCK_EMBEDDED_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1324,13 +1324,13 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             echo "#############################"
             echo ""
         
-            mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            mvn clean install -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/payara-jwt-auth-arquillian-extension/pom.xml -Dpayara.version="$PAYARA_VERSION"
         
             if [ "$TEST_PAYARA_5" != "y" ]; then
-                mvn clean test -Pfull,payara-server-4-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Pfull,payara-server-4-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_TEST_RESULT=$?
             else
-                mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Pfull,payara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_TEST_RESULT=$?
             fi
             
@@ -1350,7 +1350,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                     $ASADMIN stop-database || true
                 fi 
 
-                mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
 
                 # Start remote domain and database back up
@@ -1378,10 +1378,10 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 fi 
 
                 if [ "$TEST_PAYARA_5" != "y" ]; then
-                    mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                    mvn clean test -Pfull,payara-embedded-4 -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                     MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
                 else
-                    mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile\ JWT\ Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                    mvn clean test -Pfull,payara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                     MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
                 fi
                 

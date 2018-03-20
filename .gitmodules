@@ -14,3 +14,6 @@
 [submodule "Public/JavaEE8-Samples"]
 	path = Public/JavaEE8-Samples
 	url = https://github.com/javaee-samples/javaee8-samples
+[submodule "Public/MicroProfile-TCK-Runners"]
+	path = Public/MicroProfile-TCK-Runners
+	url = https://github.com/payara/MicroProfile-TCK-Runners

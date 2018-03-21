@@ -273,12 +273,6 @@ if [ "$TEST_PAYARA_5" = "y" ]; then
     if [ ! -z "$update_version" ]; then
         PAYARA_VERSION=$PAYARA_VERSION.$update_version
     fi
-    
-    if [ "$minor_version" != "181" ]; then
-        PAYARA_VERSION_GREATER_THAN_5_181="y"
-    else
-        PAYARA_VERSION_GREATER_THAN_5_181="n"
-    fi
 else
     PAYARA_VERSION=$major_version.$minor_version.$update_version.$payara_version
 fi
@@ -336,7 +330,6 @@ if [ $INTERACTIVE ]; then
         echo "RUN_MP_JWT_AUTH_TCK_TESTS_MICRO=$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO"
         echo "RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED=$RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED"
         echo "TEST_PAYARA_5=$TEST_PAYARA_5"
-        echo "PAYARA_VERSION_GREATER_THAN_5_181=$PAYARA_VERSION_GREATER_THAN_5_181"
         echo "USE_DEFAULT_DOMAIN_TEMPLATE=$USE_DEFAULT_DOMAIN_TEMPLATE"
         echo ""
         echo "PAYARA_HOME=$PAYARA_HOME"
@@ -387,7 +380,7 @@ $ASADMIN delete-instance hz-member2 || true
 $ASADMIN stop-domain $DOMAIN_NAME || true
 $ASADMIN delete-domain $DOMAIN_NAME || true
 
-if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+if [ "$TEST_PAYARA_5" = "y" ]; then
     $ASADMIN stop-database --dbtype derby || true
 else
     $ASADMIN stop-database || true
@@ -400,7 +393,7 @@ $ASADMIN -p 6048 delete-cluster test-cluster || true
 $ASADMIN stop-domain test-domain_asadmin || true
 $ASADMIN delete-domain test-domain_asadmin || true
 
-if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+if [ "$TEST_PAYARA_5" = "y" ]; then
     $ASADMIN stop-database --dbtype derby --dbport 1528 || true
 else
     $ASADMIN stop-database --dbport 1528 || true
@@ -451,7 +444,7 @@ $ASADMIN set-hazelcast-configuration --clusterName=$HZCLUSTER --enabled true --d
 $ASADMIN set resources.managed-scheduled-executor-service.concurrent/__defaultManagedScheduledExecutorService.core-pool-size=5
 
 # Start Derby Database
-if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+if [ "$TEST_PAYARA_5" = "y" ]; then
     $ASADMIN start-database --dbtype derby || true
 else
     $ASADMIN start-database || true
@@ -588,7 +581,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_PAYARA_PRIVATE_TESTS" != "n" ]; then
     $ASADMIN stop-instance hz-member1 || true
     $ASADMIN stop-instance hz-member2 || true
     
-    if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    if [ "$TEST_PAYARA_5" = "y" ]; then
         $ASADMIN stop-database --dbtype derby --dbport 1528 || true
     else
         $ASADMIN stop-database --dbport 1528 || true
@@ -631,7 +624,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -643,7 +636,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
                 # Start Derby Database
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -663,7 +656,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -674,7 +667,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -704,7 +697,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -715,7 +708,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -735,7 +728,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -746,7 +739,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_SAMPLES_TESTS" != "n" ]; then
                 
                 # Start the remote domain again
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -774,7 +767,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
             # Shut down the remote domain to stop port clashes
             $ASADMIN stop-domain $DOMAIN_NAME || true
-            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+            if [ "$TEST_PAYARA_5" = "y" ]; then
                 $ASADMIN stop-database --dbtype derby || true
             else
                 $ASADMIN stop-database || true
@@ -785,7 +778,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
             
             # Start the remote domain again
             $ASADMIN start-domain $DOMAIN_NAME
-            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+            if [ "$TEST_PAYARA_5" = "y" ]; then
                 $ASADMIN start-database --dbtype derby || true
             else
                 $ASADMIN start-database || true
@@ -800,7 +793,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
             # Shut down the remote domain to stop port clashes
             $ASADMIN stop-domain $DOMAIN_NAME || true
-            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+            if [ "$TEST_PAYARA_5" = "y" ]; then
                 $ASADMIN stop-database --dbtype derby || true
             else
                 $ASADMIN stop-database || true
@@ -811,7 +804,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
             
             # Start the remote domain again
             $ASADMIN start-domain $DOMAIN_NAME
-            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+            if [ "$TEST_PAYARA_5" = "y" ]; then
                 $ASADMIN start-database --dbtype derby || true
             else
                 $ASADMIN start-database || true
@@ -854,7 +847,7 @@ fi
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
     # Shut down the remote domain to stop port clashes
     $ASADMIN stop-domain $DOMAIN_NAME || true
-    if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    if [ "$TEST_PAYARA_5" = "y" ]; then
         $ASADMIN stop-database --dbtype derby || true
     else
         $ASADMIN stop-database || true
@@ -893,7 +886,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EMBEDDED_CARGO_TESTS" != "n" ]; then
 
     # Start remote domain and database back up
     $ASADMIN start-domain $DOMAIN_NAME
-    if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+    if [ "$TEST_PAYARA_5" = "y" ]; then
         $ASADMIN start-database --dbtype derby || true
     else
         $ASADMIN start-database || true
@@ -981,7 +974,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1004,7 +997,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1016,7 +1009,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
         if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_EMBEDDED" != "n" ]; then
             # Shut down the remote domain to stop port clashes
             $ASADMIN stop-domain $DOMAIN_NAME || true
-            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+            if [ "$TEST_PAYARA_5" = "y" ]; then
                 $ASADMIN stop-database --dbtype derby || true
             else
                 $ASADMIN stop-database || true
@@ -1044,7 +1037,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
             # Start remote domain and database back up
             $ASADMIN start-domain $DOMAIN_NAME
-            if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+            if [ "$TEST_PAYARA_5" = "y" ]; then
                 $ASADMIN start-database --dbtype derby || true
             else
                 $ASADMIN start-database || true
@@ -1071,7 +1064,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1082,7 +1075,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1098,7 +1091,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1109,7 +1102,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1138,7 +1131,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1149,7 +1142,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1165,7 +1158,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1176,7 +1169,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1204,7 +1197,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1215,7 +1208,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1231,7 +1224,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1242,7 +1235,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1270,7 +1263,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1281,7 +1274,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1297,7 +1290,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1308,7 +1301,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1344,7 +1337,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1355,7 +1348,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1371,7 +1364,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 
                 # Shut down the remote domain to stop port clashes
                 $ASADMIN stop-domain $DOMAIN_NAME || true
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN stop-database --dbtype derby || true
                 else
                     $ASADMIN stop-database || true
@@ -1388,7 +1381,7 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
 
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
-                if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+                if [ "$TEST_PAYARA_5" = "y" ]; then
                     $ASADMIN start-database --dbtype derby || true
                 else
                     $ASADMIN start-database || true
@@ -1403,7 +1396,7 @@ fi
 #################
 
 $ASADMIN stop-domain $DOMAIN_NAME || true
-if [ "$PAYARA_VERSION_GREATER_THAN_5_181" = "y" ]; then
+if [ "$TEST_PAYARA_5" = "y" ]; then
     $ASADMIN stop-database --dbtype derby || true
 else
     $ASADMIN stop-database || true

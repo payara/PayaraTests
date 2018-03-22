@@ -13,7 +13,7 @@
 	url = git@bitbucket.org:payara/payaratests-private
 [submodule "Public/JavaEE8-Samples"]
 	path = Public/JavaEE8-Samples
-	url = https://github.com/javaee-samples/javaee8-samples
+	url = https://github.com/payara/patched-src-javaee8-samples
 [submodule "Public/MicroProfile-TCK-Runners"]
 	path = Public/MicroProfile-TCK-Runners
 	url = https://github.com/payara/MicroProfile-TCK-Runners

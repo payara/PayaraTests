@@ -104,6 +104,9 @@ else
         
             # If we do want to run the Java EE 8 Samples tests...
             if [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
+                # Check if we want to only run the stable tests
+                read -rp "Do you only want to run the stable tests? (y/n) [y] " STABLE_EE8_SAMPLES_ONLY
+            
                 # Check if we want to run the samples against Payara Micro
                 read -rp "Do you also want to run the samples against Payara Micro? (y/n) [y] " RUN_EE8_SAMPLES_TESTS_MICRO
             fi
@@ -302,9 +305,10 @@ if [ $INTERACTIVE ]; then
         echo "QUICK_PAYARA_PRIVATE_ONLY=$QUICK_PAYARA_PRIVATE_ONLY"
         echo "RUN_SAMPLES_TESTS=$RUN_SAMPLES_TESTS"	
         echo "RUN_SAMPLES_TESTS_MICRO=$RUN_SAMPLES_TESTS_MICRO"
+        echo "STABLE_SAMPLES_ONLY=$STABLE_SAMPLES_ONLY"
         echo "RUN_EE8_SAMPLES_TESTS=$RUN_EE8_SAMPLES_TESTS"
         echo "RUN_EE8_SAMPLES_TESTS_MICRO=$RUN_EE8_SAMPLES_TESTS_MICRO"
-        echo "STABLE_SAMPLES_ONLY=$STABLE_SAMPLES_ONLY"
+        echo "STABLE_EE8_SAMPLES_ONLY=$STABLE_EE8_SAMPLES_ONLY"
         echo "RUN_CARGO_TRACKER_TESTS=$RUN_CARGO_TRACKER_TESTS"
         echo "RUN_EMBEDDED_CARGO_TESTS=$RUN_EMBEDDED_CARGO_TESTS"
         echo "RUN_GLASSFISH_TESTS=$RUN_GLASSFISH_TESTS"
@@ -751,64 +755,126 @@ fi
 
 # Run the Java EE 8 Samples tests if selected
 if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS" != "n" ]; then
-    # No unstable tests yet defined so ignore for now and run it all
-    echo ""
-    echo "#######################################"
-    echo "# Running All Java EE 8 Samples Tests #"
-    echo "#######################################"
-    echo ""
-    # Check if we should fail at end or not
-    if [ "$FAIL_AT_END" != "n" ];then
-	    # Fail at end
-	    mvn clean test -U -Ppayara-remote -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
-        SAMPLES_EE8_TEST_RESULT=$?
+    # If we've selected to only run the stable tests...
+    if [ "$STABLE_ONLY" != "n" ] || [ "$STABLE_EE8_SAMPLES_ONLY" != "n" ]; then
+        echo ""
+        echo "##########################################"
+        echo "# Running Stable Java EE 8 Samples Tests #"
+        echo "##########################################"
+        echo ""
+        # Check if we should fail at end or not
+        if [ "$FAIL_AT_END" != "n" ];then
+            # Fail at end
+            mvn clean test -U -Ppayara-remote,stable -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
+            SAMPLES_EE8_TEST_RESULT=$?
         
-        # Run against Micro if selected
-        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
-            # Shut down the remote domain to stop port clashes
-            $ASADMIN stop-domain $DOMAIN_NAME || true
-            if [ "$TEST_PAYARA_5" = "y" ]; then
-                $ASADMIN stop-database --dbtype derby || true
-            else
-                $ASADMIN stop-database || true
-            fi
-        
-            mvn clean test -U -Ppayara-micro-managed -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
-            SAMPLES_EE8_MICRO_TEST_RESULT=$?
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi
             
-            # Start the remote domain again
-            $ASADMIN start-domain $DOMAIN_NAME
-            if [ "$TEST_PAYARA_5" = "y" ]; then
-                $ASADMIN start-database --dbtype derby || true
-            else
-                $ASADMIN start-database || true
-            fi 
+                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
+                SAMPLES_EE8_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        else
+            # Fail fast
+            mvn clean test -U -Ppayara-remote,stable -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
+            SAMPLES_EE8_TEST_RESULT=$?
+            
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+            
+                mvn clean test -U -Ppayara-micro-managed,stable -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
+                SAMPLES_EE8_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
         fi
     else
-	    # Fail fast
-	    mvn clean test -U -Ppayara-remote -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
-	    SAMPLES_EE8_TEST_RESULT=$?
-	    
-	    # Run against Micro if selected
-        if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
-            # Shut down the remote domain to stop port clashes
-            $ASADMIN stop-domain $DOMAIN_NAME || true
-            if [ "$TEST_PAYARA_5" = "y" ]; then
-                $ASADMIN stop-database --dbtype derby || true
-            else
-                $ASADMIN stop-database || true
-            fi 
+        echo ""
+        echo "#######################################"
+        echo "# Running All Java EE 8 Samples Tests #"
+        echo "#######################################"
+        echo ""
+        # Check if we should fail at end or not
+        if [ "$FAIL_AT_END" != "n" ];then
+            # Fail at end
+            mvn clean test -U -Ppayara-remote -Dpayara.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
+            SAMPLES_EE8_TEST_RESULT=$?
         
-            mvn clean test -U -Ppayara-micro-managed -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
-            SAMPLES_EE8_MICRO_TEST_RESULT=$?
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi
             
-            # Start the remote domain again
-            $ASADMIN start-domain $DOMAIN_NAME
-            if [ "$TEST_PAYARA_5" = "y" ]; then
-                $ASADMIN start-database --dbtype derby || true
-            else
-                $ASADMIN start-database || true
-            fi 
+                mvn clean test -U -Ppayara-micro-managed -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -fae -f Public/JavaEE8-Samples/pom.xml
+                SAMPLES_EE8_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        else
+            # Fail fast
+            mvn clean test -U -Ppayara-remote -Dpayara.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
+            SAMPLES_EE8_TEST_RESULT=$?
+            
+            # Run against Micro if selected
+            if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_EE8_SAMPLES_TESTS_MICRO" != "n" ]; then
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+            
+                mvn clean test -U -Ppayara-micro-managed -Dpayara.version="$PAYARA_VERSION" -Dpayara.micro.version="$PAYARA_VERSION" -f Public/JavaEE8-Samples/pom.xml
+                SAMPLES_EE8_MICRO_TEST_RESULT=$?
+                
+                # Start the remote domain again
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
         fi
     fi
 fi

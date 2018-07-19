@@ -209,6 +209,39 @@ else
                     fi
                     read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED
                 fi
+                
+                read -rp "Do you want to run the OpenTracing TCK? (y/n) [y] " RUN_MP_OPENTRACING_TCK_TESTS
+                
+                if [ "$RUN_MP_OPENTRACING_TCK_TESTS" != "n" ]; then
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_OPENTRACING_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_OPENTRACING_TCK_TESTS_MICRO="n"
+                    fi
+                    read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_OPENTRACING_TCK_TESTS_EMBEDDED
+                fi
+                
+                read -rp "Do you want to run the Rest Client TCK? (y/n) [y] " RUN_MP_REST_CLIENT_TCK_TESTS
+                
+                if [ "$RUN_MP_REST_CLIENT_TCK_TESTS" != "n" ]; then
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_REST_CLIENT_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_REST_CLIENT_TCK_TESTS_MICRO="n"
+                    fi
+                    read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_REST_CLIENT_TCK_TESTS_EMBEDDED
+                fi
+                
+                read -rp "Do you want to run the OpenAPI TCK? (y/n) [y] " RUN_MP_OPENAPI_TCK_TESTS
+                
+                if [ "$RUN_MP_OPENAPI_TCK_TESTS" != "n" ]; then
+                    if [ "$TEST_PAYARA_5" = "y" ]; then
+                        read -rp "Do you also want to the TCK against Payara Micro? (y/n) [y] " RUN_MP_OPENAPI_TCK_TESTS_MICRO
+                    else
+                        RUN_MP_OPENAPI_TCK_TESTS_MICRO="n"
+                    fi
+                    read -rp "Do you also want to the TCK against Payara Embedded? (y/n) [y] " RUN_MP_OPENAPI_TCK_TESTS_EMBEDDED
+                fi
             fi
         fi
     fi
@@ -333,6 +366,15 @@ if [ $INTERACTIVE ]; then
         echo "RUN_MP_JWT_AUTH_TCK_TESTS=$RUN_MP_JWT_AUTH_TCK_TESTS"
         echo "RUN_MP_JWT_AUTH_TCK_TESTS_MICRO=$RUN_MP_JWT_AUTH_TCK_TESTS_MICRO"
         echo "RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED=$RUN_MP_JWT_AUTH_TCK_TESTS_EMBEDDED"
+        echo "RUN_MP_OPENTRACING_TCK_TESTS=$RUN_MP_OPENTRACING_TCK_TESTS"
+        echo "RUN_MP_OPENTRACING_TCK_TESTS_MICRO=$RUN_MP_OPENTRACING_TCK_TESTS_MICRO"
+        echo "RUN_MP_OPENTRACING_TCK_TESTS_EMBEDDED=$RUN_MP_OPENTRACING_TCK_TESTS_EMBEDDED"
+        echo "RUN_MP_REST_CLIENT_TCK_TESTS=$RUN_MP_REST_CLIENT_TCK_TESTS"
+        echo "RUN_MP_REST_CLIENT_TCK_TESTS_MICRO=$RUN_MP_REST_CLIENT_TCK_TESTS_MICRO"
+        echo "RUN_MP_REST_CLIENT_TCK_TESTS_EMBEDDED=$RUN_MP_REST_CLIENT_TCK_TESTS_EMBEDDED"
+        echo "RUN_MP_OPENAPI_TCK_TESTS=$RUN_MP_OPENAPI_TCK_TESTS"
+        echo "RUN_MP_OPENAPI_TCK_TESTS_MICRO=$RUN_MP_OPENAPI_TCK_TESTS_MICRO"
+        echo "RUN_MP_OPENAPI_TCK_TESTS_EMBEDDED=$RUN_MP_OPENAPI_TCK_TESTS_EMBEDDED"
         echo "TEST_PAYARA_5=$TEST_PAYARA_5"
         echo "USE_DEFAULT_DOMAIN_TEMPLATE=$USE_DEFAULT_DOMAIN_TEMPLATE"
         echo ""
@@ -458,6 +500,21 @@ fi
 SERVLET_TEST_PASSWORD_FILE=$PAYARA_HOME/servlet-passwords.txt
 echo AS_ADMIN_USERPASSWORD=p1 > "$SERVLET_TEST_PASSWORD_FILE"
 $ASADMIN --passwordfile="$SERVLET_TEST_PASSWORD_FILE" create-file-user --groups g1 u1
+
+# Enable Request Tracing Service for OpenTracing TCK
+$ASADMIN set-requesttracing-configuration --enabled=true --target=server-config --dynamic=true
+
+# Tell Request Tracing Service to use OpenTracing Mock Tracer for OpenTracing TCK
+$ASADMIN create-system-properties --target=server-config USE_OPENTRACING_MOCK_TRACER=true
+
+# Resize HTTP Thread pool size for OpenTracing TCK
+$ASADMIN set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=200
+
+# Resize Executor Service pool size for OpenTracing TCK
+$ASADMIN set-payara-executor-service-configuration --threadpoolexecutorcorepoolsize=20 --threadpoolexecutormaxpoolsize=100 --threadpoolexecutorqueuesize=200 --scheduledthreadpoolexecutorcorepoolsize=20
+
+# Restart domain
+$ASADMIN restart-domain $DOMAIN_NAME
 
 ##############################
 ### Run the Selected Tests ###
@@ -1036,6 +1093,20 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
             MP_JWT_AUTH_TCK_TEST_RESULT=$?
         fi
         
+        mvn clean install -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenTracing/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+        MP_OPENTRACING_TCK_TEST_RESULT=$?
+        
+        if [ "$TEST_PAYARA_5" != "y" ]; then
+            mvn clean install -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner-4/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            MP_REST_CLIENT_TCK_TEST_RESULT=$?
+        else
+            mvn clean install -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            MP_REST_CLIENT_TCK_TEST_RESULT=$?
+        fi
+        
+        mvn clean install -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenAPI/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+        MP_OPENAPI_TCK_TEST_RESULT=$?
+        
         if [ "$TEST_PAYARA_5" = "y" ]; then
             if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_ALL_MP_TCK_TESTS_MICRO" != "n" ]; then
                 # Shut down the remote domain to stop port clashes
@@ -1060,6 +1131,15 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
         
                 mvn clean test -Pfull,payara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-JWT-Auth/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
                 MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=$?
+                
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenTracing/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                MP_OPENTRACING_TCK_MICRO_TEST_RESULT=$?
+        
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                MP_REST_CLIENT_TCK_MICRO_TEST_RESULT=$?
+        
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenAPI/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+                MP_OPENAPI_TCK_MICRO_TEST_RESULT=$?
             
                 # Start remote domain and database back up
                 $ASADMIN start-domain $DOMAIN_NAME
@@ -1101,6 +1181,15 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT=$?
             fi
 
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenTracing/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT=$?
+        
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT=$?
+        
+            mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenAPI/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION" 
+            MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT=$?
+            
             # Start remote domain and database back up
             $ASADMIN start-domain $DOMAIN_NAME
             if [ "$TEST_PAYARA_5" = "y" ]; then
@@ -1454,6 +1543,212 @@ if [ "$RUN_ALL_TESTS" != "n" ] || [ "$RUN_MP_TCK_TESTS" != "n" ]; then
                 fi 
             fi
         fi
+        
+        # Run the OpenTracing tests
+        if [ "$RUN_MP_OPENTRACING_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "################################"
+            echo "# Running MP OpenTracing Tests #"
+            echo "################################"
+            echo ""
+
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenTracing/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            MP_OPENTRACING_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_OPENTRACING_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "######################################"
+                echo "# Running MP OpenTracing Micro Tests #"
+                echo "######################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenTracing/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_OPENTRACING_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        
+            if [ "$RUN_MP_OPENTRACING_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "#########################################"
+                echo "# Running MP OpenTracing Embedded Tests #"
+                echo "#########################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenTracing/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT=$?
+                
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        fi
+        
+        # Run the OpenTracing tests
+        if [ "$RUN_MP_OPENAPI_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "################################"
+            echo "# Running MP OpenAPI Tests #"
+            echo "################################"
+            echo ""
+
+            mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenAPI/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+            MP_OPENAPI_TCK_TEST_RESULT=$?
+        
+            if [ "$RUN_MP_OPENAPI_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "######################################"
+                echo "# Running MP OpenAPI Micro Tests #"
+                echo "######################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenAPI/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_OPENAPI_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        
+            if [ "$RUN_MP_OPENAPI_TCK_TESTS_EMBEDDED" != "n" ]; then
+                echo ""
+                echo "#########################################"
+                echo "# Running MP OpenAPI Embedded Tests #"
+                echo "#########################################"
+                echo ""
+                
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+
+                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-OpenAPI/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT=$?
+                
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        fi
+        
+        # Run the Rest Client tests
+        if [ "$RUN_MP_REST_CLIENT_TCK_TESTS" != "n" ]; then
+            echo ""
+            echo "################################"
+            echo "# Running MP Rest Client Tests #"
+            echo "################################"
+            echo ""
+
+            if [ "$TEST_PAYARA_5" = "y" ]; then
+                mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_REST_CLIENT_TCK_TEST_RESULT=$?
+            else
+                mvn clean test -Ppayara-server-remote -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner-4/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_REST_CLIENT_TCK_TEST_RESULT=$?
+            fi
+        
+            if [ "$RUN_MP_REST_CLIENT_TCK_TESTS_MICRO" != "n" ]; then
+                echo ""
+                echo "######################################"
+                echo "# Running MP Rest Client Micro Tests #"
+                echo "######################################"
+                echo ""
+            
+                # Shut down the remote domain to stop port clashes
+                $ASADMIN stop-domain $DOMAIN_NAME || true
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN stop-database --dbtype derby || true
+                else
+                    $ASADMIN stop-database || true
+                fi 
+
+                mvn clean test -Ppayara-micro-managed -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+                MP_REST_CLIENT_TCK_MICRO_TEST_RESULT=$?
+
+                # Start remote domain and database back up
+                $ASADMIN start-domain $DOMAIN_NAME
+                if [ "$TEST_PAYARA_5" = "y" ]; then
+                    $ASADMIN start-database --dbtype derby || true
+                else
+                    $ASADMIN start-database || true
+                fi 
+            fi
+        
+#            if [ "$RUN_MP_REST_CLIENT_TCK_TESTS_EMBEDDED" != "n" ]; then
+#                echo ""
+#                echo "#########################################"
+#                echo "# Running MP Rest Client Embedded Tests #"
+#                echo "#########################################"
+#                echo ""
+#                
+#                # Shut down the remote domain to stop port clashes
+#                $ASADMIN stop-domain $DOMAIN_NAME || true
+#                if [ "$TEST_PAYARA_5" = "y" ]; then
+#                    $ASADMIN stop-database --dbtype derby || true
+#                else
+#                    $ASADMIN stop-database || true
+#                fi ##
+#
+#                mvn clean test -Ppayara-embedded -f Public/MicroProfile-TCK-Runners/MicroProfile-Rest-Client/tck-runner/pom.xml -Dpayara.version="$PAYARA_VERSION"
+#                MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT=$?
+#                ###
+#
+#                # Start remote domain and database back up
+#                $ASADMIN start-domain $DOMAIN_NAME
+#                if [ "$TEST_PAYARA_5" = "y" ]; then
+#                    $ASADMIN start-database --dbtype derby || true
+#                else
+#                    $ASADMIN start-database || true
+#                fi 
+#            fi
+        fi
     fi
 fi
 
@@ -1623,10 +1918,64 @@ else
     MP_JWT_AUTH_TCK_MICRO_TEST_RESULT=0
 fi
 
+if [ ! -z "$MP_OPENTRACING_TCK_TEST_RESULT" ]; then
+    echo MP_OPENTRACING_TCK_TEST_RESULT = $MP_OPENTRACING_TCK_TEST_RESULT
+else
+    MP_OPENTRACING_TCK_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT" ]; then
+    echo MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT = $MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT
+else
+    MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_OPENTRACING_TCK_MICRO_TEST_RESULT" ]; then
+    echo MP_OPENTRACING_TCK_MICRO_TEST_RESULT = $MP_OPENTRACING_TCK_MICRO_TEST_RESULT
+else
+    MP_OPENTRACING_TCK_MICRO_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_OPENAPI_TCK_TEST_RESULT" ]; then
+    echo MP_OPENAPI_TCK_TEST_RESULT = $MP_OPENAPI_TCK_TEST_RESULT
+else
+    MP_OPENAPI_TCK_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT" ]; then
+    echo MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT = $MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT
+else
+    MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_OPENAPI_TCK_MICRO_TEST_RESULT" ]; then
+    echo MP_OPENAPI_TCK_MICRO_TEST_RESULT = $MP_OPENAPI_TCK_MICRO_TEST_RESULT
+else
+    MP_OPENAPI_TCK_MICRO_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_REST_CLIENT_TCK_TEST_RESULT" ]; then
+    echo MP_REST_CLIENT_TCK_TEST_RESULT = $MP_REST_CLIENT_TCK_TEST_RESULT
+else
+    MP_OPENAPI_TCK_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT" ]; then
+    echo MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT = $MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT
+else
+    MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT=0
+fi
+
+if [ ! -z "$MP_REST_CLIENT_TCK_MICRO_TEST_RESULT" ]; then
+    echo MP_REST_CLIENT_TCK_MICRO_TEST_RESULT = $MP_REST_CLIENT_TCK_MICRO_TEST_RESULT
+else
+    MP_REST_CLIENT_TCK_MICRO_TEST_RESULT=0
+fi
+
 ##########################
 ### Check for Failures ###
 ##########################
-if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ]  || [ $MP_CONFIG_TCK_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_MICRO_TEST_RESULT -ne 0 ]; then
+if [ $PAYARA_PRIVATE_TEST_RESULT -ne 0 ] || [ $SAMPLES_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_TEST_RESULT -ne 0 ] || [ $CARGO_TRACKER_TEST_RESULT -ne 0 ] || [ $GLASSFISH_TEST_RESULT -ne 0 ] || [ $MOJARRA_TEST_RESULT -ne 0 ] || [ $STABILITY_STREAM_VERSION_VALIDATOR_TEST_RESULT -ne 0 ] || [ $EMBEDDED_ALL_CARGO_TRACKER_TEST_RESULT -ne 0 ]  || [ $MP_CONFIG_TCK_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_CONFIG_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_HEALTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_FAULT_TOLERANCE_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_METRICS_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_JWT_AUTH_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_OPENTRACING_TCK_TEST_RESULT -ne 0 ] || [ $MP_OPENTRACING_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_OPENTRACING_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_OPENAPI_TCK_TEST_RESULT -ne 0 ] || [ $MP_OPENAPI_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_OPENAPI_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $MP_REST_CLIENT_TCK_TEST_RESULT -ne 0 ] || [ $MP_REST_CLIENT_TCK_MICRO_TEST_RESULT -ne 0 ] || [ $MP_REST_CLIENT_TCK_EMBEDDED_TEST_RESULT -ne 0 ] || [ $SAMPLES_MICRO_TEST_RESULT -ne 0 ] || [ $SAMPLES_EE8_MICRO_TEST_RESULT -ne 0 ]; then
     echo "Exiting with exit code 1"
     exit 1
 fi
